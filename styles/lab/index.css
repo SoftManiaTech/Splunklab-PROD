@@ -1,0 +1,7 @@
+/* Apply Inter font globally */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+  color: #1f2937;
+}

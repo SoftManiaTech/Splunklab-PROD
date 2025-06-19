@@ -36,10 +36,8 @@ import {
   Settings,
   Download,
   Share2,
-  ThumbsUp,
-  Eye,
-  User,
   UserRoundCheck,
+  Check,
 } from "lucide-react"
 
 interface EnvironmentOption {
@@ -50,7 +48,7 @@ interface EnvironmentOption {
   description: string
   features: string[]
   components?: string[]
-  pricing: { amount: number; days: number; popular?: boolean }[]
+  pricing: { amount: number; days?: number; hours: number, popular?: boolean, paymentLink: string }[]
   redirectUrl: string
   color: string
   bgColor: string
@@ -67,17 +65,17 @@ const environments: EnvironmentOption[] = [
     icon: <Server className="w-6 h-6" />,
     description: "Single instance with BOTSv3 dataset for hands-on security training and threat hunting practice.",
     features: [
-      "Pre-configured Splunk instance",
-      "BOTSv3 security dataset included",
-      "Ready-to-use dashboards",
-      "24/7 lab access",
+      "Pre-configured Splunk instance (optional)",
+      "BOTSv3 Security Dataset (Real-world logs for threat hunting). (optional)",
+      "Supporting Add-ons for seamless data ingestion. (optional)",
     ],
     components: ["Splunk Enterprise"],
     pricing: [
-      { amount: 100, days: 2 },
-      { amount: 200, days: 5 },
-      { amount: 500, days: 15, popular: true },
-      { amount: 1000, days: 30 },
+      { amount: 100, hours: 10, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 200, hours: 21, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 300, hours: 33, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 400, hours: 45, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 500, hours: 56, paymentLink: "https://softmania.com/pay/standalone/100" },
     ],
     redirectUrl: "https://softmania.com/splunk-standalone-lab",
     color: "text-blue-600",
@@ -95,15 +93,14 @@ const environments: EnvironmentOption[] = [
     features: [
       "4-component architecture",
       "Distributed search capabilities",
-      "Role-based access control",
-      "Production-like environment",
+      "BOTSv3 Security Dataset (Real-world logs for threat hunting). (optional)",
     ],
     components: ["Search Head", "Indexer", "Heavy Forwarder", "Universal Forwarder"],
     pricing: [
-      { amount: 200, days: 2 },
-      { amount: 500, days: 5 },
-      { amount: 1000, days: 12, popular: true },
-      { amount: 2000, days: 25 },
+      { amount: 200, hours: 4, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 500, hours: 13, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000" , popular: true },
+      { amount: 1500, hours: 42, paymentLink: "https://softmania.com/pay/standalone/100" },
     ],
     redirectUrl: "https://softmania.com/splunk-distributed-lab",
     color: "text-emerald-600",
@@ -122,15 +119,15 @@ const environments: EnvironmentOption[] = [
     features: [
       "Search head cluster (3 nodes)",
       "Indexer cluster (3 nodes)",
-      "High availability & failover",
-      "Enterprise security features",
+      "Management server features (Deployer, License manager, Deployment server, Monitoring Console)",
     ],
-    components: ["SH Cluster", "IDX Cluster", "Cluster Master","HF","Management server", "Deployer"],
+    components: ["SH Cluster", "IDX Cluster", "Cluster Master","HF","Management server"],
     pricing: [
-      { amount: 1000, days: 3 },
-      { amount: 2000, days: 7 },
-      { amount: 3000, days: 12, popular: true },
-      { amount: 5000, days: 25 },
+      { amount: 1000, hours: 11, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 2000, hours: 23, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 3000, hours: 37, paymentLink: "https://softmania.com/pay/standalone/100", popular: true },
+      { amount: 4000, hours: 49, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 5000, hours: 62, paymentLink: "https://softmania.com/pay/standalone/100"},
     ],
     redirectUrl: "https://softmania.com/splunk-cluster-lab",
     color: "text-purple-600",
@@ -308,6 +305,25 @@ export default function LabEnvironments() {
                     </div>
                   )}
 
+                   {/* Info */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-600" />
+                      Info
+                    </h3>
+                    <div className="space-y-2">
+                      {env.features.map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Pricing */}
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Choose Package</h3>
@@ -315,6 +331,7 @@ export default function LabEnvironments() {
                       {env.pricing.map((option, index) => (
                         <div
                           key={index}
+                          onClick={() => window.open(option.paymentLink, "_blank")}
                           className={`relative p-3 rounded-lg border text-center cursor-pointer transition-all duration-300 hover:scale-105 ${
                             selectedPricing[env.id]?.amount === option.amount
                               ? "border-green-500 bg-green-50 dark:bg-green-950/50 ring-1 ring-green-200 dark:ring-green-800 shadow-md"
@@ -322,7 +339,6 @@ export default function LabEnvironments() {
                                 ? "border-blue-500 bg-blue-50 dark:bg-blue-950/50 shadow-sm"
                                 : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm"
                           }`}
-                          onClick={() => handlePricingSelect(env.id, option)}
                         >
                           {selectedPricing[env.id]?.amount === option.amount && (
                             <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">
@@ -342,10 +358,10 @@ export default function LabEnvironments() {
                           )}
                           <div className="text-lg font-bold text-gray-900 dark:text-white">₹{option.amount}</div>
                           <div className="text-xs text-gray-600 dark:text-gray-400">
-                            {option.days} {option.days === 1 ? "day" : "days"}
+                            {option.hours} {option.hours === 1 ? "hour" : "hours"}
                           </div>
                           <div className="text-xs text-green-600 font-medium">
-                            ₹{Math.round(option.amount / option.days)}/day
+                            ₹{Math.round(option.amount / option.hours)}/Hours
                           </div>
                         </div>
                       ))}
@@ -379,7 +395,7 @@ export default function LabEnvironments() {
                     </Button>
                   </div> */}
 
-                  {/* Action Buttons */}
+                  {/* Action Buttons
                   <div className="flex flex-col gap-2 pt-2">
                     <Button
                       onClick={() => {
@@ -398,7 +414,7 @@ export default function LabEnvironments() {
                       <ExternalLink className="w-4 h-4 mr-2" />
                       {selectedPricing[env.id] ? `Launch - ₹${selectedPricing[env.id].amount}` : "Select Package First"}
                     </Button>
-                  </div>
+                  </div> */}
 
                   {/* Info Box
                   <div className="bg-blue-50 dark:bg-blue-950/50 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -438,8 +454,8 @@ export default function LabEnvironments() {
               >
                 <Phone className="w-6 h-6 group-hover:animate-pulse" />
                 <div className="text-center">
-                  <div className="font-medium">Call Back</div>
-                  <div className="text-xs opacity-90">Within 5 mins</div>
+                  {/* <div className="font-medium">Call Back</div> */}
+                  {/* <div className="text-xs opacity-90">Within 5 mins</div> */}
                 </div>
               </Button>
               <Button

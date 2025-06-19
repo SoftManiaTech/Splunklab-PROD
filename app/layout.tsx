@@ -18,7 +18,6 @@ const poppins = Poppins({
 export const metadata = {
   title: "Splunk Lab Budget Calculator",
   description: "Calculate Splunk lab costs and runtime within your budget",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({

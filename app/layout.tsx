@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/Splunk-Lab-Wizard.png", 
+        url: "https://splunklab.softmania.in/Splunk-Lab-Wizard.png", 
         width: 1200,
         height: 630,
         alt: "Splunk Lab - Soft Mania Open Graph Preview",

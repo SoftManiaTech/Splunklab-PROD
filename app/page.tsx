@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { SoftmaniaLogo } from "@/components/softmania-logo"
 import Link from 'next/link';
+import Salesiq from "@/components/salesiq"
 import {
   Server,
   Database,
@@ -399,7 +400,7 @@ export default function LabEnvironments() {
                     </Button>
                   </div>
 
-                  {/* Info Box */}
+                  {/* Info Box
                   <div className="bg-blue-50 dark:bg-blue-950/50 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex items-start gap-2">
                       <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
@@ -410,7 +411,7 @@ export default function LabEnvironments() {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             ))}
@@ -672,6 +673,7 @@ export default function LabEnvironments() {
           </div>
         </div>
       </footer>
+      <Salesiq />
     </div>
   )
 }

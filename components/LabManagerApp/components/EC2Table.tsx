@@ -2,7 +2,7 @@
 
 import React from 'react';
 import axios from 'axios';
-import { Copy } from 'lucide-react';
+import { Copy, Loader2 } from 'lucide-react';
 
 interface EC2Instance {
   Name: string;
@@ -24,6 +24,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
 
   const [disabledButtons, setDisabledButtons] = React.useState<Record<string, boolean>>({});
   const [copiedField, setCopiedField] = React.useState<string | null>(null);
+  const [loadingAction, setLoadingAction] = React.useState<string | null>(null);
 
   const isCooldown = (instanceId: string, action: string) =>
     disabledButtons[`${instanceId}_${action}`];
@@ -31,6 +32,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
   const handleButtonClick = async (action: string, instanceId: string) => {
     const key = `${instanceId}_${action}`;
     setDisabledButtons(prev => ({ ...prev, [key]: true }));
+    setLoadingAction(key);
 
     await callAction(action, instanceId);
 
@@ -40,6 +42,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
         delete newState[key];
         return newState;
       });
+      setLoadingAction(null);
     }, 5000);
   };
 
@@ -88,7 +91,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
           fontSize: '0.7rem',
           padding: '2px 6px',
           borderRadius: 4,
-          whiteSpace: 'nowrap'
+          whiteSpace: 'nowrap',
         }}>
           Copied!
         </div>
@@ -125,7 +128,9 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
   };
 
   const renderButton = (label: string, action: string, instanceId: string) => {
+    const key = `${instanceId}_${action}`;
     const disabled = isCooldown(instanceId, action);
+    const isLoading = loadingAction === key;
 
     return (
       <button
@@ -137,6 +142,9 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
             : actionStyles[action].backgroundColor,
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.6 : 1,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
         }}
         disabled={disabled}
         onMouseEnter={(e) => {
@@ -150,7 +158,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
           }
         }}
       >
-        {label}
+        {isLoading ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : label}
       </button>
     );
   };
@@ -190,7 +198,8 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
             const state = inst.State.toLowerCase();
             const isStopped = state === 'stopped';
             const isRunning = state === 'running';
-            const isMutedState = state === 'pending' || state === 'starting';
+            const isMutedState = ['pending', 'starting'].includes(state);
+            const isBusyState = ['pending', 'starting', 'stopping', 'rebooting'].includes(state);
 
             return (
               <tr key={inst.InstanceId} style={{ borderTop: '1px solid #e5e7eb' }}>
@@ -198,7 +207,10 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
                 <td style={{ padding: '10px' }}>
                   {inst.InstanceId ? renderCopyField(inst.InstanceId, `${inst.InstanceId}_id`) : '-'}
                 </td>
-                <td style={{ padding: '10px' }}>{inst.State}</td>
+                <td style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {inst.State}
+                  {isBusyState && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
+                </td>
                 <td style={{ padding: '10px' }}>
                   {inst.PrivateIp ? renderCopyField(inst.PrivateIp, `${inst.InstanceId}_private`) : '-'}
                 </td>

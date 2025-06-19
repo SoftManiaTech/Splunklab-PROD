@@ -2,6 +2,7 @@
 
 import React from 'react';
 import axios from 'axios';
+import { Copy } from 'lucide-react';
 
 interface EC2Instance {
   Name: string;
@@ -22,8 +23,9 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
   const [disabledButtons, setDisabledButtons] = React.useState<Record<string, boolean>>({});
+  const [copiedField, setCopiedField] = React.useState<string | null>(null);
 
-  const isButtonDisabled = (instanceId: string, action: string) =>
+  const isCooldown = (instanceId: string, action: string) =>
     disabledButtons[`${instanceId}_${action}`];
 
   const handleButtonClick = async (action: string, instanceId: string) => {
@@ -51,6 +53,48 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
     });
     setInstances(res.data);
   };
+
+  const handleCopy = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldId);
+    setTimeout(() => setCopiedField(null), 1500);
+  };
+
+  const renderCopyField = (text: string, fieldId: string) => (
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+      <span style={{ marginRight: 6 }}>{text}</span>
+      <div
+        onClick={() => handleCopy(text, fieldId)}
+        style={{
+          cursor: 'pointer',
+          padding: 2,
+          borderRadius: 4,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f1f5f9',
+          border: '1px solid #e2e8f0',
+        }}
+      >
+        <Copy size={14} color="#4b5563" />
+      </div>
+      {copiedField === fieldId && (
+        <div style={{
+          position: 'absolute',
+          top: '-20px',
+          left: 0,
+          backgroundColor: '#10b981',
+          color: 'white',
+          fontSize: '0.7rem',
+          padding: '2px 6px',
+          borderRadius: 4,
+          whiteSpace: 'nowrap'
+        }}>
+          Copied!
+        </div>
+      )}
+    </div>
+  );
 
   const baseStyle: React.CSSProperties = {
     padding: '6px 14px',
@@ -80,8 +124,8 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
     },
   };
 
-  const getButton = (label: string, action: string, instanceId: string) => {
-    const disabled = isButtonDisabled(instanceId, action);
+  const renderButton = (label: string, action: string, instanceId: string) => {
+    const disabled = isCooldown(instanceId, action);
 
     return (
       <button
@@ -142,29 +186,44 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
           </tr>
         </thead>
         <tbody>
-          {instances.map((inst) => (
-            <tr key={inst.InstanceId} style={{ borderTop: '1px solid #e5e7eb' }}>
-              <td style={{ padding: '10px' }}>{inst.Name}</td>
-              <td style={{ padding: '10px' }}>{inst.InstanceId}</td>
-              <td style={{ padding: '10px' }}>{inst.State}</td>
-              <td style={{ padding: '10px' }}>{inst.PrivateIp}</td>
-              <td style={{ padding: '10px' }}>{inst.PublicIp}</td>
-              <td style={{ padding: '10px' }}>
-                {inst.State === 'running' && inst.PublicIp ? (
-                  <code style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>
-                    {inst.SSHCommand}
-                  </code>
-                ) : (
-                  '-'
-                )}
-              </td>
-              <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>
-                {getButton('Start', 'start', inst.InstanceId)}
-                {getButton('Stop', 'stop', inst.InstanceId)}
-                {getButton('Reboot', 'reboot', inst.InstanceId)}
-              </td>
-            </tr>
-          ))}
+          {instances.map((inst) => {
+            const state = inst.State.toLowerCase();
+            const isStopped = state === 'stopped';
+            const isRunning = state === 'running';
+            const isMutedState = state === 'pending' || state === 'starting';
+
+            return (
+              <tr key={inst.InstanceId} style={{ borderTop: '1px solid #e5e7eb' }}>
+                <td style={{ padding: '10px' }}>{inst.Name}</td>
+                <td style={{ padding: '10px' }}>
+                  {inst.InstanceId ? renderCopyField(inst.InstanceId, `${inst.InstanceId}_id`) : '-'}
+                </td>
+                <td style={{ padding: '10px' }}>{inst.State}</td>
+                <td style={{ padding: '10px' }}>
+                  {inst.PrivateIp ? renderCopyField(inst.PrivateIp, `${inst.InstanceId}_private`) : '-'}
+                </td>
+                <td style={{ padding: '10px' }}>
+                  {inst.PublicIp ? renderCopyField(inst.PublicIp, `${inst.InstanceId}_public`) : '-'}
+                </td>
+                <td style={{ padding: '10px' }}>
+                  {inst.State === 'running' && inst.PublicIp && inst.SSHCommand ? (
+                    renderCopyField(inst.SSHCommand, `${inst.InstanceId}_ssh`)
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>
+                  {!isMutedState && isStopped && renderButton('Start', 'start', inst.InstanceId)}
+                  {!isMutedState && isRunning && (
+                    <>
+                      {renderButton('Stop', 'stop', inst.InstanceId)}
+                      {renderButton('Reboot', 'reboot', inst.InstanceId)}
+                    </>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

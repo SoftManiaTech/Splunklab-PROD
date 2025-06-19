@@ -37,6 +37,7 @@ import {
   UserRoundCheck,
   Check,
   ExternalLink,
+  ArrowUpRightFromSquare,
 } from "lucide-react"
 
 interface EnvironmentOption {
@@ -360,7 +361,7 @@ export default function LabEnvironments() {
                           )}
 
                           {/* External link icon */}
-                          <ExternalLink className="absolute top-2 right-2 w-4 h-4 text-gray-300 dark:text-gray-500" />
+                          <ArrowUpRightFromSquare className="absolute top-2 right-2 w-4 h-4 text-gray-300 dark:text-gray-500" />
 
                           <div className="text-lg font-bold text-gray-900 dark:text-white">₹{option.amount}</div>
                           <div className="text-xs text-gray-600 dark:text-gray-400">

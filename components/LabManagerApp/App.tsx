@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, JSX } from 'react';
+import { useRouter } from "next/navigation"
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import EC2Table from './components/EC2Table';
+import { SoftmaniaLogo } from "@/components/softmania-logo"
+import { Button } from "@/components/ui/button"
+import { Phone, UserRoundCheck } from 'lucide-react';
+import Link from 'next/link';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID as string;
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
@@ -12,12 +17,32 @@ const SESSION_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours
 function App(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [instances, setInstances] = useState<any[]>([]);
+  const router = useRouter()
+  const [showContactModal, setShowContactModal] = useState(false)
 
   const getUsernameFromEmail = (email: string): string => {
     if (!email) return '';
     const namePart = email.split('@')[0];
     return namePart.charAt(0).toUpperCase() + namePart.slice(1);
   };
+
+   const handleContactOption = (type: "call" | "whatsapp" | "email" | "schedule") => {
+    switch (type) {
+      case "call":
+        window.open("tel:+919876543210", "_self")
+        break
+      case "whatsapp":
+        window.open("https://wa.me/919876543210?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
+        break
+      case "email":
+        window.open("mailto:sales@softmania.com?subject=Splunk Lab Environment Inquiry", "_self")
+        break
+      case "schedule":
+        window.open("https://calendly.com/softmania-sales", "_blank")
+        break
+    }
+    setShowContactModal(false)
+  }
 
   const fetchInstances = async (userEmail: string) => {
     try {
@@ -48,6 +73,7 @@ function App(): JSX.Element {
   useEffect(() => {
     const storedEmail = localStorage.getItem('userEmail');
     const loginTime = localStorage.getItem('loginTime');
+
 
     if (storedEmail && loginTime) {
       const now = new Date().getTime();
@@ -82,8 +108,24 @@ function App(): JSX.Element {
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
+       {/* Header */}
+      <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto sm:px-4 py-2">
+          <div className="flex items-center justify-between">
+           <Link href="/" passHref>
+            <SoftmaniaLogo size="md" />
+          </Link>
+
+           <h2 style={{ marginTop: 5, marginBottom: 20, fontSize: '1.5rem', fontWeight: '900', color: '#34495e' }}>EC2 Manager Portal</h2>
+            
+          </div>
+        </div>
+      </header>
+
+      
       <div style={{ padding: 20 }}>
-        <h2 style={{ marginTop: 5, marginBottom: 20, fontSize: '2rem', fontWeight: '700', color: '#34495e' }}>EC2 Manager Portal</h2>
+        
+        {/* <h2 style={{ marginTop: 5, marginBottom: 20, fontSize: '2rem', color: '#34495e', fontWeight: '900' }}>EC2 Manager Portal</h2> */}
 
         {email && (
           <div style={{
@@ -98,7 +140,7 @@ function App(): JSX.Element {
           }}>
             <div>
               <h2 style={{ margin: 0, color: '#2c3e50' }}>
-                👋 Welcome back, <span style={{ color: '#007acc' }}>{getUsernameFromEmail(email)}</span>
+                Welcome back, <span style={{ color: '#007acc' }}>{getUsernameFromEmail(email)}</span>
               </h2>
               <p style={{ marginTop: 5, fontSize: '1.1rem', color: '#34495e' }}>
                 This is your personal <strong>EC2 Instance Manager Dashboard</strong> 🚀
@@ -113,7 +155,7 @@ function App(): JSX.Element {
               border: 'none',
               cursor: 'pointer',
               height: 'fit-content'
-            }}>🔓 Logout</button>
+            }}>Logout</button>
           </div>
         )}
 
@@ -128,6 +170,8 @@ function App(): JSX.Element {
       </div>
     </GoogleOAuthProvider>
   );
+
+  
 }
 
 export default App;

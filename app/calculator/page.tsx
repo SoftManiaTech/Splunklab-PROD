@@ -11,6 +11,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SoftmaniaLogo } from "@/components/softmania-logo"
+import Link from 'next/link';
+import { useRouter } from "next/navigation"
 import {
   Calculator,
   DollarSign,
@@ -26,7 +28,14 @@ import {
   IndianRupee,
   Globe,
   Cpu,
+  Phone,
+  UserRoundCheck,
+  MessageCircle,
+  Mail,
+  Headphones,
 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { AlertDialogHeader } from "@/components/ui/alert-dialog"
 
 // AWS Pricing Data - Separated by instance type
 const T2_MEDIUM_REGIONS = {
@@ -105,6 +114,8 @@ export default function SplunkBudgetCalculator() {
   const [numberOfUsers, setNumberOfUsers] = useState(1)
   const [exchangeRate, setExchangeRate] = useState(84)
   const [desiredDays, setDesiredDays] = useState(10)
+  const [showContactModal, setShowContactModal] = useState(false)
+  const router = useRouter()
 
   // AWS Configuration
   const [selectedRegion, setSelectedRegion] = useState("ap-south-1") // Default to Mumbai
@@ -172,6 +183,25 @@ export default function SplunkBudgetCalculator() {
       }
     }
   }
+
+  const handleContactOption = (type: "call" | "whatsapp" | "email" | "schedule") => {
+    switch (type) {
+      case "call":
+        window.open("tel:+919876543210", "_self")
+        break
+      case "whatsapp":
+        window.open("https://wa.me/919876543210?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
+        break
+      case "email":
+        window.open("mailto:sales@softmania.com?subject=Splunk Lab Environment Inquiry", "_self")
+        break
+      case "schedule":
+        window.open("https://calendly.com/softmania-sales", "_blank")
+        break
+    }
+    setShowContactModal(false)
+  }
+
 
   useEffect(() => {
     calculateCosts()
@@ -655,11 +685,115 @@ export default function SplunkBudgetCalculator() {
 
   return (
     <TooltipProvider>
+      {/* Header */}
+      <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+           <Link href="/" passHref>
+            <SoftmaniaLogo size="md" />
+          </Link>
+          <Button
+              variant="outline"
+              size="sm"
+              className="m-[4px] hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-sm"
+              onClick={() => router.push("/lab")}
+            >
+              <UserRoundCheck className="mr-2" />
+              MyLab
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowContactModal(true)}
+              className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-sm"
+            >
+              <Phone className="w-4 h-4 mr-2" />
+              Contact Sales
+            </Button>
+          </div>
+        </div>
+      </header>
+
+   {/* Enhanced Contact Modal */}
+      <Dialog open={showContactModal} onOpenChange={setShowContactModal}>
+        <DialogContent className="max-w-lg mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl">
+          <DialogHeader className="text-center pb-6">
+            <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Contact Our Sales Team
+            </DialogTitle>
+            <p className="text-gray-600 dark:text-gray-400">
+              Choose your preferred way to connect with our Splunk experts
+            </p>
+          </DialogHeader>
+          <div className="space-y-4 p-6 pt-0">
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={() => handleContactOption("call")}
+                className="bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              >
+                <Phone className="w-6 h-6 group-hover:animate-pulse" />
+                <div className="text-center">
+                  <div className="font-medium">Call Back</div>
+                  <div className="text-xs opacity-90">Within 5 mins</div>
+                </div>
+              </Button>
+              <Button
+                onClick={() => handleContactOption("whatsapp")}
+                className="bg-green-600 hover:bg-green-700 text-white flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              >
+                <MessageCircle className="w-6 h-6 group-hover:animate-bounce" />
+                <div className="text-center">
+                  <div className="font-medium">WhatsApp</div>
+                  <div className="text-xs opacity-90">Instant chat</div>
+                </div>
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={() => handleContactOption("email")}
+                variant="outline"
+                className="flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-md"
+              >
+                <Mail className="w-6 h-6 group-hover:animate-pulse" />
+                <div className="text-center">
+                  <div className="font-medium">Email Us</div>
+                  <div className="text-xs opacity-70">Get details</div>
+                </div>
+              </Button>
+              <Button
+                onClick={() => handleContactOption("schedule")}
+                variant="outline"
+                className="flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-md"
+              >
+                <Calendar className="w-6 h-6 group-hover:animate-pulse" />
+                <div className="text-center">
+                  <div className="font-medium">Schedule</div>
+                  <div className="text-xs opacity-70">Book meeting</div>
+                </div>
+              </Button>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mt-6">
+              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                <Headphones className="w-5 h-5 text-blue-600" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">Expert Support Available</p>
+                  {/* <p className="text-xs">Our Splunk certified team is ready to help you choose the right environment</p> */}
+                </div>
+              </div>
+            </div>
+            <Button variant="ghost" onClick={() => setShowContactModal(false)} className="w-full mt-4">
+              Maybe Later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Header with Logo */}
           <div className="flex items-center justify-between mb-8">
-            <SoftmaniaLogo size="lg" />
             <div className="text-center flex-1">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2 font-heading">
                 

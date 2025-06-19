@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { SoftmaniaLogo } from "@/components/softmania-logo"
+import Link from 'next/link';
 import {
   Server,
   Database,
@@ -193,7 +194,9 @@ export default function LabEnvironments() {
       <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <SoftmaniaLogo size="md" />
+            <Link href="/" passHref>
+              <SoftmaniaLogo size="md" />
+            </Link>
             <Button
               variant="outline"
               size="sm"

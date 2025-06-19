@@ -1,6 +1,7 @@
 import type React from "react"
 import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
+import { Metadata } from "next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,9 +16,51 @@ const poppins = Poppins({
   display: "swap",
 })
 
-export const metadata = {
-  title: "Splunk Lab Budget Calculator",
-  description: "Calculate Splunk lab costs and runtime within your budget",
+export const metadata: Metadata = {
+  title: "Splunk Lab - Soft Mania | Budget-Friendly Splunk Environments",
+  description:
+    "Launch and manage Standalone, Distributed, and Clustered Splunk labs within your budget and timeframe. Splunk Lab - Soft Mania offers quick, cost-effective deployment solutions for learning, development, and testing.",
+  keywords: [
+    "Splunk lab setup",
+    "Splunk standalone environment",
+    "Splunk clustered deployment",
+    "Splunk non-clustered lab",
+    "Splunk lab calculator",
+    "Splunk on budget",
+    "Soft Mania Splunk Lab",
+    "Splunk lab automation",
+    "Splunk distributed architecture",
+    "Splunk training lab setup"
+  ],
+  authors: [{ name: "Soft Mania" }],
+  creator: "Soft Mania",
+  metadataBase: new URL("https://softmania.in"),
+  alternates: {
+    canonical: "https://splunklab.softmania.in",
+  },
+  openGraph: {
+    title: "Splunk Lab - Soft Mania",
+    description:
+      "Build Splunk labs tailored to your budget and time. Supports Standalone, Distributed, and Clustered environments.",
+    url: "https://splunklab.softmania.in",
+    siteName: "Splunk Lab - Soft Mania",
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: "/Splunk-Lab-Wizard.png", 
+        width: 1200,
+        height: 630,
+        alt: "Splunk Lab - Soft Mania Open Graph Preview",
+      },
+    ],
+  },
+  other: {
+    "official:website": "https://softmania.in",
+    "linkedin:company": "https://www.linkedin.com/company/softmania-tech/",
+    "instagram:profile": "https://www.instagram.com/softmaniatech/",
+    "youtube:channel": "https://www.youtube.com/@SoftManiaTech",
+  },
 }
 
 export default function RootLayout({

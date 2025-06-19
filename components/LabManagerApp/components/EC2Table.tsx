@@ -21,6 +21,26 @@ interface EC2TableProps {
 const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
+  const [disabledButtons, setDisabledButtons] = React.useState<Record<string, boolean>>({});
+
+  const isButtonDisabled = (instanceId: string, action: string) =>
+    disabledButtons[`${instanceId}_${action}`];
+
+  const handleButtonClick = async (action: string, instanceId: string) => {
+    const key = `${instanceId}_${action}`;
+    setDisabledButtons(prev => ({ ...prev, [key]: true }));
+
+    await callAction(action, instanceId);
+
+    setTimeout(() => {
+      setDisabledButtons(prev => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    }, 5000);
+  };
+
   const callAction = async (action: string, instanceId: string) => {
     await axios.post(`${apiUrl}/${action}`, { instance_id: instanceId }, {
       headers: { Authorization: `Bearer ${email}` }
@@ -60,23 +80,36 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
     },
   };
 
-  const getButton = (label: string, action: string, instanceId: string) => (
-    <button
-      onClick={() => callAction(action, instanceId)}
-      style={{
-        ...baseStyle,
-        backgroundColor: actionStyles[action].backgroundColor,
-      }}
-      onMouseEnter={(e) =>
-        (e.target as HTMLButtonElement).style.backgroundColor = actionStyles[action].hover
-      }
-      onMouseLeave={(e) =>
-        (e.target as HTMLButtonElement).style.backgroundColor = actionStyles[action].backgroundColor
-      }
-    >
-      {label}
-    </button>
-  );
+  const getButton = (label: string, action: string, instanceId: string) => {
+    const disabled = isButtonDisabled(instanceId, action);
+
+    return (
+      <button
+        onClick={() => handleButtonClick(action, instanceId)}
+        style={{
+          ...baseStyle,
+          backgroundColor: disabled
+            ? '#9ca3af'
+            : actionStyles[action].backgroundColor,
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          opacity: disabled ? 0.6 : 1,
+        }}
+        disabled={disabled}
+        onMouseEnter={(e) => {
+          if (!disabled) {
+            (e.target as HTMLButtonElement).style.backgroundColor = actionStyles[action].hover;
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled) {
+            (e.target as HTMLButtonElement).style.backgroundColor = actionStyles[action].backgroundColor;
+          }
+        }}
+      >
+        {label}
+      </button>
+    );
+  };
 
   return (
     <div

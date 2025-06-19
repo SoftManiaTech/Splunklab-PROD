@@ -347,8 +347,8 @@ export default function LabEnvironments() {
                       ))}
                     </div>
                   </div>
-
-                  {/* Demo Video Preview */}
+                  
+                  {/* Demo Video Preview
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
@@ -373,7 +373,7 @@ export default function LabEnvironments() {
                       <Play className="w-4 h-4 mr-2" />
                       Watch Demo
                     </Button>
-                  </div>
+                  </div> */}
 
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-2 pt-2">
@@ -386,8 +386,8 @@ export default function LabEnvironments() {
                       disabled={!selectedPricing[env.id]}
                       className={`w-full ${
                         selectedPricing[env.id]
-                          ? `${env.color.replace("text-", "bg-").replace("600", "600")} hover:opacity-50 text-gray-900 shadow-lg hover:shadow-xl`
-                          : "bg-gray-100 dark:bg-gray-500 text-gray-500 dark:text-gray-200 cursor-not-allowed"
+                          ? `${env.color.replace("text-", "bg-").replace("600", "600")} hover:opacity-300 text-gray-900 hover:text-white shadow-lg hover:shadow-xl`
+                          : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-200 cursor-not-allowed"
                       } transition-all duration-300 hover:scale-105`}
                       size="sm"
                     >

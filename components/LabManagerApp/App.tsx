@@ -91,22 +91,28 @@ function App(): JSX.Element {
             padding: 15,
             borderRadius: 10,
             backgroundColor: '#f4f6fa',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
           }}>
-            <h2 style={{ margin: 0, color: '#2c3e50' }}>
-              👋 Welcome back, <span style={{ color: '#007acc' }}>{getUsernameFromEmail(email)}</span>
-            </h2>
-            <p style={{ marginTop: 5, fontSize: '1.1rem', color: '#34495e' }}>
-              This is your personal <strong>EC2 Instance Manager Dashboard</strong> 🚀
-            </p>
+            <div>
+              <h2 style={{ margin: 0, color: '#2c3e50' }}>
+                👋 Welcome back, <span style={{ color: '#007acc' }}>{getUsernameFromEmail(email)}</span>
+              </h2>
+              <p style={{ marginTop: 5, fontSize: '1.1rem', color: '#34495e' }}>
+                This is your personal <strong>EC2 Instance Manager Dashboard</strong> 🚀
+              </p>
+            </div>
             <button onClick={handleLogout} style={{
-              marginTop: 10,
+              marginLeft: 20,
               padding: '8px 16px',
               borderRadius: 6,
               backgroundColor: '#e74c3c',
               color: '#fff',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              height: 'fit-content'
             }}>🔓 Logout</button>
           </div>
         )}

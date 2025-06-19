@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useRouter } from "next/navigation"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -15,10 +16,7 @@ import {
   Database,
   Network,
   CheckCircle,
-  ExternalLink,
   Star,
-  Users,
-  Shield,
   Play,
   X,
   Phone,
@@ -73,11 +71,11 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Splunk Enterprise"],
     pricing: [
-      { amount: 100, hours: 10, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 200, hours: 21, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 300, hours: 33, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 400, hours: 45, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 500, hours: 56, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 100, hours: 10, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 200, hours: 21, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 300, hours: 33, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 400, hours: 45, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 500, hours: 56, paymentLink: "https://softmania.com/pay/standalone/100" },
     ],
     redirectUrl: "https://softmania.com/splunk-standalone-lab",
     color: "text-blue-600",
@@ -100,10 +98,10 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Search Head", "Indexer", "Heavy Forwarder", "Universal Forwarder"],
     pricing: [
-      { amount: 200, hours: 4, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 500, hours: 13, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000" , popular: true },
-      { amount: 1500, hours: 42, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 200, hours: 4, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 500, hours: 13, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000", popular: true },
+      { amount: 1500, hours: 42, paymentLink: "https://softmania.com/pay/standalone/100" },
     ],
     redirectUrl: "https://softmania.com/splunk-distributed-lab",
     color: "text-emerald-600",
@@ -125,13 +123,13 @@ const environments: EnvironmentOption[] = [
       "Management server features (Deployer, License manager, Deployment server, Monitoring Console)",
     ],
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
-    components: ["SH Cluster", "IDX Cluster", "Cluster Master","HF","Management server"],
+    components: ["SH Cluster", "IDX Cluster", "Cluster Master", "HF", "Management server"],
     pricing: [
-      { amount: 1000, hours: 11, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 2000, hours: 23, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 1000, hours: 11, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 2000, hours: 23, paymentLink: "https://softmania.com/pay/standalone/100" },
       { amount: 3000, hours: 37, paymentLink: "https://softmania.com/pay/standalone/100", popular: true },
-      { amount: 4000, hours: 49, paymentLink: "https://softmania.com/pay/standalone/100"},
-      { amount: 5000, hours: 62, paymentLink: "https://softmania.com/pay/standalone/100"},
+      { amount: 4000, hours: 49, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 5000, hours: 62, paymentLink: "https://softmania.com/pay/standalone/100" },
     ],
     redirectUrl: "https://softmania.com/splunk-cluster-lab",
     color: "text-purple-600",
@@ -309,7 +307,7 @@ export default function LabEnvironments() {
                     </div>
                   )}
 
-                   {/* Info */}
+                  {/* Info */}
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
@@ -336,13 +334,12 @@ export default function LabEnvironments() {
                         <div
                           key={index}
                           onClick={() => window.open(option.paymentLink, "_blank")}
-                          className={`relative p-3 rounded-lg border text-center cursor-pointer transition-all duration-300 hover:scale-105 ${
-                            selectedPricing[env.id]?.amount === option.amount
-                              ? "border-green-500 bg-green-50 dark:bg-green-950/50 ring-1 ring-green-200 dark:ring-green-800 shadow-md"
-                              : option.popular
-                                ? "border-blue-500 bg-blue-50 dark:bg-blue-950/50 shadow-sm"
-                                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm"
-                          }`}
+                          className={`relative p-3 rounded-lg border text-center cursor-pointer transition-all duration-300 hover:scale-105 ${selectedPricing[env.id]?.amount === option.amount
+                            ? "border-green-500 bg-green-50 dark:bg-green-950/50 ring-1 ring-green-200 dark:ring-green-800 shadow-md"
+                            : option.popular
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950/50 shadow-sm"
+                              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm"
+                            }`}
                         >
                           {selectedPricing[env.id]?.amount === option.amount && (
                             <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">
@@ -371,7 +368,7 @@ export default function LabEnvironments() {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Demo Video Preview
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-3 mb-3">
@@ -557,9 +554,8 @@ export default function LabEnvironments() {
 
               {/* Custom Premium Controls */}
               <div
-                className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 transition-opacity duration-300 ${
-                  showControls ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                }`}
+                className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  }`}
                 onMouseEnter={() => setShowControls(true)}
                 onMouseLeave={() => setShowControls(false)}
               >
@@ -642,13 +638,13 @@ export default function LabEnvironments() {
                   action. Learn about the features, interface, and capabilities before making your decision. This demo
                   covers setup, configuration, and real-world use cases.
                 </p> */}
-                
+
               </div>
               <div className={`p-3 rounded-xl ${currentVideo?.bgColor} ${currentVideo?.color} ml-6`}>
                 {currentVideo?.icon}
               </div>
             </div>
-            
+
           </div>
         </DialogContent>
       </Dialog>
@@ -680,17 +676,99 @@ export default function LabEnvironments() {
         </div>
       </section> */}
 
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-16 bg-gray-50">
+        <div className="container">
+          <h2 className="text-3xl font-bold text-center mb-12 dark:text-green-600 tracking-tight">Frequently Asked Questions</h2>
+          <div className="max-w-3xl mx-auto dark:text-gray-800 tracking-tight">
+            <Accordion type="single" collapsible className="w-full">
+
+              <AccordionItem value="what-is-this">
+                <AccordionTrigger>What does this lab service provide?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">
+                    We offer hourly-based Splunk lab environments with pre-loaded demo datasets (like BOTSv3), Splunk add-ons, and ready-to-use setups such as standalone, non-clustered distributed, and clustered environments.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="who-is-this-for">
+                <AccordionTrigger>Who is this Splunk lab for?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">
+                    This lab is perfect for beginners, learners preparing for certifications, or professionals wanting hands-on experience in a real-time Splunk environment without having to set it up from scratch.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="support-available">
+                <AccordionTrigger>Is 24/7 support included?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">
+                    No, we do not provide 24/7 support. However, free basic course guidance is available to help you get started with the lab environment.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="demo-dataset">
+                <AccordionTrigger>What demo data is included?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">
+                    We include popular datasets like <strong>BOTSv3</strong> to help you simulate real-world security scenarios inside your lab.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="env-types">
+                <AccordionTrigger>Can I choose different types of environments?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">
+                    Yes. You can request standalone, non-clustered distributed, or fully clustered Splunk environments depending on your learning goals.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="cert-prep">
+                <AccordionTrigger>Is this lab suitable for certification practice?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-gray-600">
+                    Absolutely. This lab setup is ideal for certification practice, lab exercises, and real-time scenario testing with Splunk.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-gray-200 dark:border-gray-800 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <SoftmaniaLogo size="sm" />
+            {/* Left Side: Logo + Copyright */}
+            <div className="flex flex-col items-center sm:items-start gap-1 text-sm text-gray-600 dark:text-gray-400">
+              <SoftmaniaLogo size="sm" />
+              <p>© {new Date().getFullYear()} Softmania. All rights reserved.</p>
+            </div>
+
+            {/* Right Side: Links */}
             <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-              <button>Privacy</button>
-              <button>Terms</button>
-              <button>Support</button>
+              <div className="mt-2 flex justify-center space-x-4">
+                <Link href="https://splunk.softmania.in/#/privacy-policy" target="_blank" className="hover:text-black transition-colors">
+                  Privacy Policy
+                </Link>
+                <Link href="https://splunk.softmania.in/#/terms-and-conditions" target="_blank" className="hover:text-black transition-colors">
+                  Terms & Conditions
+                </Link>
+                <Link href="https://splunk.softmania.in/#/refund-policy" target="_blank" className="hover:text-black transition-colors">
+                  Refund Policy
+                </Link>
+              </div>
             </div>
           </div>
+
         </div>
       </footer>
       <Salesiq />

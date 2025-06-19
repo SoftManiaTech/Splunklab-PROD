@@ -4,9 +4,9 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <meta property="og:title" content="Splunk Lab – Soft Mania" />
-        <meta property="og:description" content="Quickly deploy cost-effective Splunk labs..." />
-        <meta property="og:image" content="https://splunklab.softmania.in/og-cover.png" />
+        <meta property="og:title" content="Splunk Lab - Soft Mania | Budget-Friendly Splunk Environments" />
+        <meta property="og:description" content="Launch and manage Standalone, Distributed, and Clustered Splunk labs within your budget and timeframe. Splunk Lab - Soft Mania offers quick, cost-effective deployment solutions for learning, development, and testing." />
+        <meta property="og:image" content="https://splunklab.softmania.in/Splunk-Lab-Wizard.png" />
         <meta property="og:url" content="https://splunklab.softmania.in" />
         <meta property="og:type" content="website" />
 

@@ -47,6 +47,7 @@ interface EnvironmentOption {
   icon: React.ReactNode
   description: string
   features: string[]
+  info: string[]
   components?: string[]
   pricing: { amount: number; days?: number; hours: number, popular?: boolean, paymentLink: string }[]
   redirectUrl: string
@@ -69,6 +70,7 @@ const environments: EnvironmentOption[] = [
       "BOTSv3 Security Dataset (Real-world logs for threat hunting). (optional)",
       "Supporting Add-ons for seamless data ingestion. (optional)",
     ],
+    info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Splunk Enterprise"],
     pricing: [
       { amount: 100, hours: 10, paymentLink: "https://softmania.com/pay/standalone/100"},
@@ -95,6 +97,7 @@ const environments: EnvironmentOption[] = [
       "Distributed search capabilities",
       "BOTSv3 Security Dataset (Real-world logs for threat hunting). (optional)",
     ],
+    info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Search Head", "Indexer", "Heavy Forwarder", "Universal Forwarder"],
     pricing: [
       { amount: 200, hours: 4, paymentLink: "https://softmania.com/pay/standalone/100"},
@@ -121,6 +124,7 @@ const environments: EnvironmentOption[] = [
       "Indexer cluster (3 nodes)",
       "Management server features (Deployer, License manager, Deployment server, Monitoring Console)",
     ],
+    info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["SH Cluster", "IDX Cluster", "Cluster Master","HF","Management server"],
     pricing: [
       { amount: 1000, hours: 11, paymentLink: "https://softmania.com/pay/standalone/100"},
@@ -312,13 +316,13 @@ export default function LabEnvironments() {
                       Info
                     </h3>
                     <div className="space-y-2">
-                      {env.features.map((feature, index) => (
+                      {env.info.map((info, index) => (
                         <div
                           key={index}
                           className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                         >
                           <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
-                          <span>{feature}</span>
+                          <span>{info}</span>
                         </div>
                       ))}
                     </div>

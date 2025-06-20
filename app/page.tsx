@@ -573,7 +573,7 @@ export default function LabEnvironments() {
               <br />
               Please check your email for confirmation.
               <br />
-              Lab will be delivered within <strong>4–5 hours</strong> during <strong>10 AM – 6 PM IST</strong>.
+              Lab will be delivered within <strong>10–12 hours</strong> during <strong>10 AM – 6 PM IST</strong>.
             </p>
           </div>
         </div>

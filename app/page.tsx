@@ -769,7 +769,7 @@ export default function LabEnvironments() {
             {/* Left Side: Logo + Copyright */}
             <div className="flex flex-col items-center sm:items-start gap-1 text-sm text-gray-600 dark:text-gray-400">
               <SoftmaniaLogo size="sm" />
-              <p>© {new Date().getFullYear()} Softmania. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} SoftMania. All rights reserved.</p>
             </div>
 
             {/* Right Side: Links */}

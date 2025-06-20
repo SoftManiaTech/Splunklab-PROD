@@ -142,7 +142,7 @@ function App(): JSX.Element {
             <Link href="/" passHref>
               <SoftmaniaLogo size="md" />
             </Link>
-            <h2 className="lg:text-2xl sm:text-xl font-extrabold text-gray-800">EC2 Manager Portal</h2>
+            <h2 className="lg:text-2xl sm:text-xl font-extrabold text-gray-800">Lab Manager Portal</h2>
           </div>
         </div>
       </header>
@@ -165,7 +165,7 @@ function App(): JSX.Element {
                 Welcome back, <span style={{ color: '#007acc' }}>{getUsernameFromEmail(email)}</span>
               </h2>
               <p style={{ marginTop: 5, fontSize: '1.1rem', color: '#34495e' }}>
-                This is your personal <strong>EC2 Instance Manager Dashboard</strong> 🚀
+                This is your personal <strong>Lab server Manager Dashboard</strong> 🚀
               </p>
             </div>
             <button onClick={handleLogout} style={{
@@ -205,7 +205,7 @@ function App(): JSX.Element {
           <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Confirm Logout</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to logout from your EC2 Manager Dashboard?
+              Are you sure you want to logout from your Lab Manager Dashboard?
             </p>
             <div className="flex justify-end gap-4">
               <button

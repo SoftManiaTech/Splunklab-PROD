@@ -17,9 +17,10 @@ interface EC2TableProps {
   email: string;
   instances: EC2Instance[];
   setInstances: React.Dispatch<React.SetStateAction<EC2Instance[]>>;
+  loading: boolean;
 }
 
-const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) => {
+const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loading }) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
   const [disabledButtons, setDisabledButtons] = React.useState<Record<string, boolean>>({});
@@ -131,7 +132,6 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
     const key = `${instanceId}_${action}`;
     const disabled = isCooldown(instanceId, action);
     const isLoading = loadingAction === key;
-    
 
     return (
       <button
@@ -159,10 +159,19 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
           }
         }}
       >
-        {isLoading ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : label}
+        {isLoading ? <Loader2 size={14} className="animate-spin" /> : label}
       </button>
     );
   };
+
+  if (loading && instances.length === 0) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Loader2 size={20} className="animate-spin mr-2 text-gray-500" />
+        <span className="text-gray-700 font-medium">Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -210,7 +219,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
                 </td>
                 <td style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {inst.State}
-                  {isBusyState && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
+                  {isBusyState && <Loader2 size={14} className="animate-spin text-gray-500" />}
                 </td>
                 <td style={{ padding: '10px' }}>
                   {inst.PrivateIp ? renderCopyField(inst.PrivateIp, `${inst.InstanceId}_private`) : '-'}

@@ -1,13 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, JSX } from 'react';
-import { useRouter } from "next/navigation"
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import EC2Table from './components/EC2Table';
 import { SoftmaniaLogo } from "@/components/softmania-logo"
-import { Button } from "@/components/ui/button"
-import { Phone, UserRoundCheck } from 'lucide-react';
 import Link from 'next/link';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID as string;
@@ -17,8 +14,8 @@ const SESSION_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours
 function App(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [instances, setInstances] = useState<any[]>([]);
-  const router = useRouter()
-  const [showContactModal, setShowContactModal] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // logout popup
 
   const getUsernameFromEmail = (email: string): string => {
     if (!email) return '';
@@ -26,26 +23,10 @@ function App(): JSX.Element {
     return namePart.charAt(0).toUpperCase() + namePart.slice(1);
   };
 
-  const handleContactOption = (type: "call" | "whatsapp" | "email" | "schedule") => {
-    switch (type) {
-      case "call":
-        window.open("tel:+919876543210", "_self")
-        break
-      case "whatsapp":
-        window.open("https://wa.me/919876543210?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
-        break
-      case "email":
-        window.open("mailto:sales@softmania.com?subject=Splunk Lab Environment Inquiry", "_self")
-        break
-      case "schedule":
-        window.open("https://calendly.com/softmania-sales", "_blank")
-        break
-    }
-    setShowContactModal(false)
-  }
 
   const fetchInstances = async (userEmail: string) => {
     try {
+      setLoading(true);
       const res = await fetch(`${API_URL}/instances`, {
         headers: { Authorization: `Bearer ${userEmail}` },
       });
@@ -53,6 +34,8 @@ function App(): JSX.Element {
       setInstances(data);
     } catch (error) {
       console.error("Error fetching instances:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,7 +56,6 @@ function App(): JSX.Element {
   useEffect(() => {
     const storedEmail = localStorage.getItem('userEmail');
     const loginTime = localStorage.getItem('loginTime');
-
 
     if (storedEmail && loginTime) {
       const now = new Date().getTime();
@@ -100,23 +82,32 @@ function App(): JSX.Element {
   }, [email]);
 
   const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('loginTime');
     setEmail('');
     setInstances([]);
+    setShowLogoutModal(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
+      
       {/* Header */}
       <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto sm:px-4 py-2">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" passHref>
               <SoftmaniaLogo size="md" />
             </Link>
-
-            <h2 className="text-2xl font-extrabold text-gray-800">EC2 Manager Portal</h2>
+            <h2 className="lg:text-2xl sm:text-xl font-extrabold text-gray-800">EC2 Manager Portal</h2>
           </div>
         </div>
       </header>
@@ -164,14 +155,42 @@ function App(): JSX.Element {
             />
           </div>
         ) : (
-          <EC2Table email={email} instances={instances} setInstances={setInstances} />
+          <EC2Table
+            email={email}
+            instances={instances}
+            setInstances={setInstances}
+            loading={loading}
+          />
         )}
-
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Confirm Logout</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to logout from your EC2 Manager Dashboard?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={cancelLogout}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </GoogleOAuthProvider>
   );
-
-
 }
 
 export default App;

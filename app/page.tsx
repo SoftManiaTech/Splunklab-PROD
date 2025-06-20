@@ -36,7 +36,6 @@ import {
   Share2,
   UserRoundCheck,
   Check,
-  ExternalLink,
   ArrowUpRightFromSquare,
 } from "lucide-react"
 

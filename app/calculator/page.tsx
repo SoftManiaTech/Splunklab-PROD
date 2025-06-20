@@ -190,10 +190,10 @@ export default function SplunkBudgetCalculator() {
         window.open("tel:+919876543210", "_self")
         break
       case "whatsapp":
-        window.open("https://wa.me/919876543210?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
+        window.open("https://wa.me/918317349618?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
         break
       case "email":
-        window.open("mailto:sales@softmania.com?subject=Splunk Lab Environment Inquiry", "_self")
+        window.open("mailto:info@softmania.in?subject=Splunk Lab Environment Inquiry", "_self")
         break
       case "schedule":
         window.open("https://calendly.com/softmania-sales", "_blank")
@@ -548,35 +548,32 @@ export default function SplunkBudgetCalculator() {
                 </div>
             </div>
 
-            ${
-              budgetToDays
-                ? `
+            ${budgetToDays
+        ? `
             <div class="highlight-box">
                 <div class="highlight-value">${Math.floor(results.affordableDays)} Days</div>
                 <div class="highlight-label">Estimated Runtime within ₹${budget} Budget</div>
             </div>
             `
-                : `
+        : `
             <div class="highlight-box">
                 <div class="highlight-value">₹${results.requiredBudgetINR.toFixed(2)}</div>
                 <div class="highlight-label">Required Budget for ${desiredDays} Days</div>
             </div>
             `
-            }
+      }
 
-            ${
-              numberOfUsers > 1
-                ? `
+            ${numberOfUsers > 1
+        ? `
 <div class="section">
     <div class="section-title">Per Person Analysis</div>
     <div class="grid">
         <div class="grid-item">
             <div class="grid-item-label">${!budgetToDays ? "Required Budget per Person" : "Runtime per Person"}</div>
-            <div class="grid-item-value">${
-              !budgetToDays
-                ? `₹${(results.requiredBudgetINR / numberOfUsers).toFixed(2)}`
-                : `${Math.floor(results.affordableDays)} Days`
-            }</div>
+            <div class="grid-item-value">${!budgetToDays
+          ? `₹${(results.requiredBudgetINR / numberOfUsers).toFixed(2)}`
+          : `${Math.floor(results.affordableDays)} Days`
+        }</div>
         </div>
         <div class="grid-item">
             <div class="grid-item-label">Daily Cost per Person</div>
@@ -593,8 +590,8 @@ export default function SplunkBudgetCalculator() {
     </div>
 </div>
 `
-                : ""
-            }
+        : ""
+      }
 
 <div class="section">
     <div class="section-title">${numberOfUsers > 1 ? `Total Daily Cost Breakdown (${numberOfUsers} Users)` : "Daily Cost Breakdown"}</div>
@@ -613,9 +610,8 @@ export default function SplunkBudgetCalculator() {
                 ${numberOfUsers > 1 ? `<div style="font-size: 12px; color: #6b7280;">₹${(results.storageCostINR / numberOfUsers).toFixed(2)} per person</div>` : ""}
             </div>
         </div>
-        ${
-          maintenanceCostEnabled
-            ? `
+        ${maintenanceCostEnabled
+        ? `
         <div class="cost-item">
             <span>Maintenance Cost (+25%)</span>
             <div style="text-align: right;">
@@ -624,8 +620,8 @@ export default function SplunkBudgetCalculator() {
             </div>
         </div>
         `
-            : ""
-        }
+        : ""
+      }
         <div class="cost-item">
             <span>Total Daily Cost</span>
             <div style="text-align: right;">
@@ -689,10 +685,10 @@ export default function SplunkBudgetCalculator() {
       <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-           <Link href="/" passHref>
-            <SoftmaniaLogo size="md" />
-          </Link>
-          <Button
+            <Link href="/" passHref>
+              <SoftmaniaLogo size="md" />
+            </Link>
+            <Button
               variant="outline"
               size="sm"
               className="m-[4px] hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-sm"
@@ -715,7 +711,7 @@ export default function SplunkBudgetCalculator() {
         </div>
       </header>
 
-   {/* Enhanced Contact Modal */}
+      {/* Enhanced Contact Modal */}
       <Dialog open={showContactModal} onOpenChange={setShowContactModal}>
         <DialogContent className="max-w-lg mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl">
           <DialogHeader className="text-center pb-6">
@@ -727,8 +723,8 @@ export default function SplunkBudgetCalculator() {
             </p>
           </DialogHeader>
           <div className="space-y-4 p-6 pt-0">
-            <div className="grid grid-cols-2 gap-3">
-              <Button
+            <div className="grid grid-cols-1 gap-3">
+              {/* <Button
                 onClick={() => handleContactOption("call")}
                 className="bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
               >
@@ -737,7 +733,7 @@ export default function SplunkBudgetCalculator() {
                   <div className="font-medium">Call Back</div>
                   <div className="text-xs opacity-90">Within 5 mins</div>
                 </div>
-              </Button>
+              </Button> */}
               <Button
                 onClick={() => handleContactOption("whatsapp")}
                 className="bg-green-600 hover:bg-green-700 text-white flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
@@ -796,7 +792,7 @@ export default function SplunkBudgetCalculator() {
           <div className="flex items-center justify-between mb-8">
             <div className="text-center flex-1">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2 font-heading">
-                
+
                 Splunk Lab Budget Calculator
               </h1>
             </div>
@@ -902,7 +898,7 @@ export default function SplunkBudgetCalculator() {
                     </div>
                   </div>
 
-                  
+
                 </div>
 
                 {/* Deployment Type Tabs */}
@@ -911,31 +907,28 @@ export default function SplunkBudgetCalculator() {
                   <div className="grid grid-cols-3 gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
                     <button
                       onClick={() => handleDeploymentTypeChange("standalone")}
-                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                        deploymentType === "standalone"
+                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${deploymentType === "standalone"
                           ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
                           : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                      }`}
+                        }`}
                     >
                       Standalone
                     </button>
                     <button
                       onClick={() => handleDeploymentTypeChange("non-clustered")}
-                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                        deploymentType === "non-clustered"
+                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${deploymentType === "non-clustered"
                           ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
                           : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                      }`}
+                        }`}
                     >
                       Non-Clustered
                     </button>
                     <button
                       onClick={() => handleDeploymentTypeChange("clustered")}
-                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                        deploymentType === "clustered"
+                      className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${deploymentType === "clustered"
                           ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
                           : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                      }`}
+                        }`}
                     >
                       Splunk Clustered
                     </button>

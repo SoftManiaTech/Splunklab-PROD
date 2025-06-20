@@ -26,7 +26,7 @@ function App(): JSX.Element {
     return namePart.charAt(0).toUpperCase() + namePart.slice(1);
   };
 
-   const handleContactOption = (type: "call" | "whatsapp" | "email" | "schedule") => {
+  const handleContactOption = (type: "call" | "whatsapp" | "email" | "schedule") => {
     switch (type) {
       case "call":
         window.open("tel:+919876543210", "_self")
@@ -108,24 +108,20 @@ function App(): JSX.Element {
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-       {/* Header */}
+      {/* Header */}
       <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto sm:px-4 py-2">
           <div className="flex items-center justify-between">
-           <Link href="/" passHref>
-            <SoftmaniaLogo size="md" />
-          </Link>
+            <Link href="/" passHref>
+              <SoftmaniaLogo size="md" />
+            </Link>
 
-           <h2 style={{ marginTop: 5, marginBottom: 20, fontSize: '1.5rem', fontWeight: '900', color: '#34495e' }}>EC2 Manager Portal</h2>
-            
+            <h2 className="text-2xl font-extrabold text-gray-800">EC2 Manager Portal</h2>
           </div>
         </div>
       </header>
 
-      
       <div style={{ padding: 20 }}>
-        
-        {/* <h2 style={{ marginTop: 5, marginBottom: 20, fontSize: '2rem', color: '#34495e', fontWeight: '900' }}>EC2 Manager Portal</h2> */}
 
         {email && (
           <div style={{
@@ -160,18 +156,22 @@ function App(): JSX.Element {
         )}
 
         {!email ? (
-          <GoogleLogin
-            onSuccess={handleLogin}
-            onError={() => console.log("Login Failed")}
-          />
+          <div className="flex flex-col items-center justify-center mt-16">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Login using Google</h2>
+            <GoogleLogin
+              onSuccess={handleLogin}
+              onError={() => console.log("Login Failed")}
+            />
+          </div>
         ) : (
           <EC2Table email={email} instances={instances} setInstances={setInstances} />
         )}
+
       </div>
     </GoogleOAuthProvider>
   );
 
-  
+
 }
 
 export default App;

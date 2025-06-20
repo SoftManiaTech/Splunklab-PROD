@@ -131,6 +131,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances }) =
     const key = `${instanceId}_${action}`;
     const disabled = isCooldown(instanceId, action);
     const isLoading = loadingAction === key;
+    
 
     return (
       <button

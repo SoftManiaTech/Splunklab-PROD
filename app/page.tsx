@@ -178,10 +178,10 @@ export default function LabEnvironments() {
         window.open("tel:+919876543210", "_self")
         break
       case "whatsapp":
-        window.open("https://wa.me/919876543210?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
+        window.open("https://wa.me/918317349618?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
         break
       case "email":
-        window.open("mailto:sales@softmania.com?subject=Splunk Lab Environment Inquiry", "_self")
+        window.open("mailto:info@softmania.in?subject=Splunk Lab Environment Inquiry", "_self")
         break
       case "schedule":
         window.open("https://calendly.com/softmania-sales", "_blank")
@@ -454,17 +454,17 @@ export default function LabEnvironments() {
             </p>
           </DialogHeader>
           <div className="space-y-4 p-6 pt-0">
-            <div className="grid grid-cols-2 gap-3">
-              <Button
+            <div className="grid grid-cols-1 gap-3">
+              {/* <Button
                 onClick={() => handleContactOption("call")}
                 className="bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
               >
                 <Phone className="w-6 h-6 group-hover:animate-pulse" />
                 <div className="text-center">
-                  {/* <div className="font-medium">Call Back</div> */}
-                  {/* <div className="text-xs opacity-90">Within 5 mins</div> */}
+                 <div className="font-medium">Call Back</div>
+                 <div className="text-xs opacity-90">Within 5 mins</div>
                 </div>
-              </Button>
+              </Button> */}
               <Button
                 onClick={() => handleContactOption("whatsapp")}
                 className="bg-green-600 hover:bg-green-700 text-white flex flex-col items-center gap-2 py-6 h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
@@ -505,7 +505,7 @@ export default function LabEnvironments() {
                 <Headphones className="w-5 h-5 text-blue-600" />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">Expert Support Available</p>
-                  <p className="text-xs">Our Splunk certified team is ready to help you choose the right environment</p>
+                  {/* <p className="text-xs">Our Splunk certified team is ready to help you choose the right environment</p> */}
                 </div>
               </div>
             </div>

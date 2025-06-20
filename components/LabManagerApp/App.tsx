@@ -6,6 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import EC2Table from './components/EC2Table';
 import { SoftmaniaLogo } from "@/components/softmania-logo"
 import Link from 'next/link';
+import * as CryptoJS from 'crypto-js';
+
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID as string;
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
@@ -16,6 +18,23 @@ function App(): JSX.Element {
   const [instances, setInstances] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // logout popup
+
+  const SECRET_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'softmania_secret';
+
+  const encrypt = (data: string): string => {
+    return CryptoJS.AES.encrypt(data, SECRET_KEY).toString();
+  };
+
+  const decrypt = (cipher: string): string => {
+    try {
+      const bytes = CryptoJS.AES.decrypt(cipher, SECRET_KEY);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (err) {
+      console.error('Decryption failed:', err);
+      return '';
+    }
+  };
+
 
   const getUsernameFromEmail = (email: string): string => {
     if (!email) return '';
@@ -45,21 +64,26 @@ function App(): JSX.Element {
       const userEmail = decoded.email;
 
       const loginTime = new Date().getTime();
-      localStorage.setItem('userEmail', userEmail);
-      localStorage.setItem('loginTime', loginTime.toString());
+
+      localStorage.setItem('userEmail', encrypt(userEmail));
+      localStorage.setItem('loginTime', encrypt(loginTime.toString()));
 
       setEmail(userEmail);
       fetchInstances(userEmail);
     }
   };
 
-  useEffect(() => {
-    const storedEmail = localStorage.getItem('userEmail');
-    const loginTime = localStorage.getItem('loginTime');
 
-    if (storedEmail && loginTime) {
+  useEffect(() => {
+    const encryptedEmail = localStorage.getItem('userEmail');
+    const encryptedLoginTime = localStorage.getItem('loginTime');
+
+    if (encryptedEmail && encryptedLoginTime) {
+      const storedEmail = decrypt(encryptedEmail);
+      const loginTime = parseInt(decrypt(encryptedLoginTime), 10);
+
       const now = new Date().getTime();
-      const timeElapsed = now - parseInt(loginTime, 10);
+      const timeElapsed = now - loginTime;
 
       if (timeElapsed < SESSION_DURATION_MS) {
         setEmail(storedEmail);
@@ -70,6 +94,7 @@ function App(): JSX.Element {
       }
     }
   }, []);
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -97,9 +122,10 @@ function App(): JSX.Element {
     setShowLogoutModal(false);
   };
 
+
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-      
+
       {/* Header */}
       <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">

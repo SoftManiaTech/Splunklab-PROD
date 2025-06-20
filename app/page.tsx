@@ -3,7 +3,7 @@
 import type React from "react"
 import { useRouter } from "next/navigation"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -72,11 +72,11 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Splunk Enterprise"],
     pricing: [
-      { amount: 100, hours: 10, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 200, hours: 21, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 300, hours: 33, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 400, hours: 45, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 500, hours: 56, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 100, hours: 10, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 200, hours: 21, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 300, hours: 33, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 400, hours: 45, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 500, hours: 56, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
     ],
     redirectUrl: "https://softmania.com/splunk-standalone-lab",
     color: "text-blue-600",
@@ -99,10 +99,10 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Search Head", "Indexer", "Heavy Forwarder", "Universal Forwarder"],
     pricing: [
-      { amount: 200, hours: 4, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 500, hours: 13, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 200, hours: 4, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 500, hours: 13, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
       { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000", popular: true },
-      { amount: 1500, hours: 42, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 1500, hours: 42, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
     ],
     redirectUrl: "https://softmania.com/splunk-distributed-lab",
     color: "text-emerald-600",
@@ -126,11 +126,11 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["SH Cluster", "IDX Cluster", "Cluster Master", "HF", "Management server"],
     pricing: [
-      { amount: 1000, hours: 11, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 2000, hours: 23, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 3000, hours: 37, paymentLink: "https://softmania.com/pay/standalone/100", popular: true },
-      { amount: 4000, hours: 49, paymentLink: "https://softmania.com/pay/standalone/100" },
-      { amount: 5000, hours: 62, paymentLink: "https://softmania.com/pay/standalone/100" },
+      { amount: 1000, hours: 11, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 2000, hours: 23, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 3000, hours: 37, paymentLink: "https://pages.razorpay.com/Splunk-DC-1", popular: true },
+      { amount: 4000, hours: 49, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 5000, hours: 62, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
     ],
     redirectUrl: "https://softmania.com/splunk-cluster-lab",
     color: "text-purple-600",
@@ -151,6 +151,19 @@ export default function LabEnvironments() {
   const [showControls, setShowControls] = useState(true)
   const router = useRouter()
 
+  useEffect(() => {
+  const threshold = 160; // DevTools usually shrink the window height
+  const checkDevTools = () => {
+    if (window.outerHeight - window.innerHeight > threshold) {
+      window.location.href = 'https://splunklab.softmania.com/blocked'; // or show warning page
+    }
+  };
+
+  window.addEventListener('resize', checkDevTools);
+  return () => window.removeEventListener('resize', checkDevTools);
+}, []);
+
+
   const handleRedirect = (url: string, envId?: string) => {
     if (envId && selectedPricing[envId]) {
       const pricing = selectedPricing[envId]
@@ -160,6 +173,7 @@ export default function LabEnvironments() {
       window.open(url, "_blank")
     }
   }
+
 
   const handlePricingSelect = (envId: string, pricing: { amount: number; days: number }) => {
     setSelectedPricing((prev) => ({ ...prev, [envId]: pricing }))

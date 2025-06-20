@@ -122,6 +122,15 @@ function App(): JSX.Element {
     setShowLogoutModal(false);
   };
 
+  useEffect(() => {
+  const attrsToRemove = ['bis_skin_checked', 'bis_register'];
+
+  attrsToRemove.forEach(attr => {
+    const elements = document.querySelectorAll(`[${attr}]`);
+    elements.forEach(el => el.removeAttribute(attr));
+  });
+}, []);
+
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>

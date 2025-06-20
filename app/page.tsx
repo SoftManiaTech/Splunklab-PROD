@@ -183,7 +183,7 @@ export default function LabEnvironments() {
         window.open("mailto:info@softmania.in?subject=Splunk Lab Environment Inquiry", "_self")
         break
       case "schedule":
-        window.open("https://calendly.com/softmania-sales", "_blank")
+        window.open("https://bookings.softmania.in/#/services", "_blank")
         break
     }
     setShowContactModal(false)

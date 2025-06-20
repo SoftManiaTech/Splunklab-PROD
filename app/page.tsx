@@ -3,7 +3,7 @@
 import type React from "react"
 import { useRouter } from "next/navigation"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,23 +17,11 @@ import {
   Network,
   CheckCircle,
   Star,
-  Play,
-  X,
   Phone,
   MessageCircle,
   Calendar,
-  Clock,
   Headphones,
   Mail,
-  Video,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  RotateCcw,
-  Settings,
-  Download,
-  Share2,
   UserRoundCheck,
   Check,
   ArrowUpRightFromSquare,
@@ -72,11 +60,11 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Splunk Enterprise"],
     pricing: [
-      { amount: 100, hours: 10, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 200, hours: 21, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 300, hours: 33, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 400, hours: 45, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 500, hours: 56, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 100, hours: 10, paymentLink: "hhttps://pages.razorpay.com/Splunk-SE-100" },
+      { amount: 200, hours: 21, paymentLink: "https://pages.razorpay.com/Splunk-SE-200" },
+      { amount: 300, hours: 33, paymentLink: "https://pages.razorpay.com/Splunk-SE-300" },
+      { amount: 400, hours: 45, paymentLink: "https://pages.razorpay.com/Splunk-SE-400" },
+      { amount: 500, hours: 56, paymentLink: "https://pages.razorpay.com/Splunk-SE-500" },
     ],
     redirectUrl: "https://softmania.com/splunk-standalone-lab",
     color: "text-blue-600",
@@ -99,10 +87,10 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Search Head", "Indexer", "Heavy Forwarder", "Universal Forwarder"],
     pricing: [
-      { amount: 200, hours: 4, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 500, hours: 13, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000", popular: true },
-      { amount: 1500, hours: 42, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 200, hours: 4, paymentLink: "https://pages.razorpay.com/Splunk-DNC-200" },
+      { amount: 500, hours: 13, paymentLink: "https://pages.razorpay.com/Splunk-DNC-500" },
+      { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DNC-1000", popular: true },
+      { amount: 1500, hours: 42, paymentLink: "https://pages.razorpay.com/Splunk-DNC-1500" },
     ],
     redirectUrl: "https://softmania.com/splunk-distributed-lab",
     color: "text-emerald-600",
@@ -126,11 +114,11 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["SH Cluster", "IDX Cluster", "Cluster Master", "HF", "Management server"],
     pricing: [
-      { amount: 1000, hours: 11, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 2000, hours: 23, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 3000, hours: 37, paymentLink: "https://pages.razorpay.com/Splunk-DC-1", popular: true },
-      { amount: 4000, hours: 49, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
-      { amount: 5000, hours: 62, paymentLink: "https://pages.razorpay.com/Splunk-DC-1" },
+      { amount: 1000, hours: 11, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000" },
+      { amount: 2000, hours: 23, paymentLink: "https://pages.razorpay.com/Splunk-DC-2000" },
+      { amount: 3000, hours: 37, paymentLink: "https://pages.razorpay.com/Splunk-DC-3000", popular: true },
+      { amount: 4000, hours: 49, paymentLink: "https://pages.razorpay.com/Splunk-DC-4000" },
+      { amount: 5000, hours: 62, paymentLink: "https://pages.razorpay.com/Splunk-DC-5000" },
     ],
     redirectUrl: "https://softmania.com/splunk-cluster-lab",
     color: "text-purple-600",
@@ -143,47 +131,52 @@ const environments: EnvironmentOption[] = [
 
 export default function LabEnvironments() {
   const [selectedPricing, setSelectedPricing] = useState<Record<string, { amount: number; days: number }>>({})
-  const [showVideoModal, setShowVideoModal] = useState(false)
   const [showContactModal, setShowContactModal] = useState(false)
-  const [currentVideo, setCurrentVideo] = useState<EnvironmentOption | null>(null)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [isMuted, setIsMuted] = useState(false)
-  const [showControls, setShowControls] = useState(true)
   const router = useRouter()
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-  const threshold = 160; // DevTools usually shrink the window height
-  const checkDevTools = () => {
-    if (window.outerHeight - window.innerHeight > threshold) {
-      window.location.href = 'https://splunklab.softmania.com/blocked'; // or show warning page
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
+      setShowSuccessPopup(true);
+      // Remove the query param from URL after showing
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      window.history.replaceState({}, document.title, url.pathname);
     }
-  };
+  }, []);
 
-  window.addEventListener('resize', checkDevTools);
-  return () => window.removeEventListener('resize', checkDevTools);
-}, []);
-
-
-  const handleRedirect = (url: string, envId?: string) => {
-    if (envId && selectedPricing[envId]) {
-      const pricing = selectedPricing[envId]
-      const urlWithParams = `${url}?amount=${pricing.amount}&days=${pricing.days}`
-      window.open(urlWithParams, "_blank")
-    } else {
-      window.open(url, "_blank")
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setShowSuccessPopup(false);
+      }
     }
-  }
+
+    if (showSuccessPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSuccessPopup]);
 
 
-  const handlePricingSelect = (envId: string, pricing: { amount: number; days: number }) => {
-    setSelectedPricing((prev) => ({ ...prev, [envId]: pricing }))
-  }
+  useEffect(() => {
+    const threshold = 160; // DevTools usually shrink the window height
+    const checkDevTools = () => {
+      if (window.outerHeight - window.innerHeight > threshold) {
+        window.location.href = 'https://splunklab.softmania.com/blocked'; // or show warning page
+      }
+    };
 
-  const handleViewDemo = (env: EnvironmentOption) => {
-    setCurrentVideo(env)
-    setShowVideoModal(true)
-    setIsPlaying(true)
-  }
+    window.addEventListener('resize', checkDevTools);
+    return () => window.removeEventListener('resize', checkDevTools);
+  }, []);
+
+
 
   const handleContactOption = (type: "call" | "whatsapp" | "email" | "schedule") => {
     switch (type) {
@@ -209,7 +202,7 @@ export default function LabEnvironments() {
       <header className="border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" passHref>
+            <Link href="https://pages.razorpay.com/Splunk-DC-1" passHref>
               <SoftmaniaLogo size="md" />
             </Link>
             <Button
@@ -348,7 +341,9 @@ export default function LabEnvironments() {
                       {env.pricing.map((option, index) => (
                         <div
                           key={index}
-                          onClick={() => window.open(option.paymentLink, "_blank")}
+                          onClick={() => {
+                            window.location.href = option.paymentLink;
+                          }}
                           className={`relative p-3 rounded-lg border text-center cursor-pointer transition-all duration-300 hover:scale-105 ${selectedPricing[env.id]?.amount === option.amount
                             ? "border-green-500 bg-green-50 dark:bg-green-950/50 ring-1 ring-green-200 dark:ring-green-800 shadow-md"
                             : option.popular
@@ -373,6 +368,7 @@ export default function LabEnvironments() {
                             </div>
                           )}
 
+
                           {/* External link icon */}
                           <ArrowUpRightFromSquare className="absolute top-2 right-2 w-4 h-4 text-gray-300 dark:text-gray-500" />
 
@@ -381,7 +377,7 @@ export default function LabEnvironments() {
                             {option.hours} {option.hours === 1 ? "hour" : "hours"}
                           </div>
                           <div className="text-xs text-green-600 font-medium">
-                            ₹{Math.round(option.amount / option.hours)}/Hours
+                            ₹{Math.round(option.amount / option.hours)}/Hour
                           </div>
                         </div>
                       ))}
@@ -457,6 +453,7 @@ export default function LabEnvironments() {
           </div>
         </DialogContent>
       </Dialog>
+
 
       {/* FAQ Section */}
       <section id="faq" className="py-16 bg-gray-50">
@@ -552,6 +549,37 @@ export default function LabEnvironments() {
 
         </div>
       </footer>
+      {showSuccessPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div
+            ref={popupRef}
+            className="relative max-w-md w-full bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 transition-all"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+              aria-label="Close"
+            >
+              <span className="text-lg font-semibold">&times;</span>
+            </button>
+
+            {/* Title */}
+            <h2 className="text-2xl font-semibold text-green-600 mb-3">Payment Successful!</h2>
+
+            {/* Message */}
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              Your lab setup ticket has been created.
+              <br />
+              Please check your email for confirmation.
+              <br />
+              Lab will be delivered within <strong>4–5 hours</strong> during <strong>10 AM – 6 PM IST</strong>.
+            </p>
+          </div>
+        </div>
+      )}
+
+
       <Salesiq />
     </div>
   )

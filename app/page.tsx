@@ -60,7 +60,7 @@ const environments: EnvironmentOption[] = [
     info: ["OS: Red Hat-9", "Splunk Enterprise Version: 9.4.1"],
     components: ["Splunk Enterprise"],
     pricing: [
-      { amount: 100, hours: 10, paymentLink: "hhttps://pages.razorpay.com/Splunk-SE-100" },
+      { amount: 100, hours: 10, paymentLink: "https://pages.razorpay.com/Splunk-SE-100" },
       { amount: 200, hours: 21, paymentLink: "https://pages.razorpay.com/Splunk-SE-200" },
       { amount: 300, hours: 33, paymentLink: "https://pages.razorpay.com/Splunk-SE-300" },
       { amount: 400, hours: 45, paymentLink: "https://pages.razorpay.com/Splunk-SE-400" },

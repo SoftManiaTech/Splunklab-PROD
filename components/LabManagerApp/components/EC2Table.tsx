@@ -11,6 +11,7 @@ interface EC2Instance {
   PrivateIp: string;
   PublicIp: string;
   SSHCommand: string;
+  Region: string;
 }
 
 interface EC2TableProps {
@@ -48,7 +49,13 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
   };
 
   const callAction = async (action: string, instanceId: string) => {
-    await axios.post(`${apiUrl}/${action}`, { instance_id: instanceId }, {
+    const instance = instances.find(inst => inst.InstanceId === instanceId);
+    if (!instance) return;
+
+    await axios.post(`${apiUrl}/${action}`, {
+      instance_id: instanceId,
+      region: instance.Region, // ✅ Added
+    }, {
       headers: { Authorization: `Bearer ${email}` }
     });
 
@@ -57,6 +64,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
     });
     setInstances(res.data);
   };
+
 
   const handleCopy = (text: string, fieldId: string) => {
     navigator.clipboard.writeText(text);

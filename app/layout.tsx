@@ -71,8 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className={`${inter.className} antialiased`}>{children}</body>
-
-        {/* Version Label Fixed at Bottom Right */}
+      {/* Version Label Fixed at Bottom Right */}
         <div className="fixed bottom-4 left-4 z-50 text-xs text-gray-500 bg-white/80 border border-gray-200 px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
           V1.0.0
         </div>

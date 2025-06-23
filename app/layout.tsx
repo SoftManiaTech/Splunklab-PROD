@@ -2,6 +2,7 @@ import type React from "react"
 import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { Metadata } from "next"
+import SmoothScrollProvider from "@/components/SmoothScrollProvider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -70,10 +71,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+      </body>
       {/* Version Label Fixed at Bottom Right */}
         <div className="fixed bottom-4 left-4 z-50 text-xs text-gray-500 bg-white/80 border border-gray-200 px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
-          V1.0.0
+          V1.3.0
         </div>
     </html>
   )

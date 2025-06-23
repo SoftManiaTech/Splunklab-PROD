@@ -196,10 +196,23 @@ function App(): JSX.Element {
         ) : hasLab ? (
           <>
             <div className="bg-[#f4f6fa] shadow-sm rounded-lg p-5 mb-6">
-              <h2 className="text-lg text-[#2c3e50] font-bold">
-                Welcome back, <span className="text-[#007acc]">{getUsernameFromEmail(email)}</span>
-              </h2>
-              <p className="text-sm text-[#34495e]">This is your personal <strong>Lab server Manager Dashboard</strong> 🚀</p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <h2 className="text-lg text-[#2c3e50] font-bold">
+                    Welcome back, <span className="text-[#007acc]">{getUsernameFromEmail(email)}</span>
+                  </h2>
+                  <p className="text-sm text-[#34495e]">
+                    This is your personal <strong>Lab server Manager Dashboard</strong> 🚀
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="mt-2 sm:mt-0 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              </div>
 
               {usage && (
                 <div className="w-full text-sm mt-4">
@@ -218,9 +231,8 @@ function App(): JSX.Element {
                     <span><strong>Used Hours:</strong> {usage.used_hours.toFixed(1)} hrs</span>
                     <span><strong>Balance Hours:</strong> {usage.balance_hours.toFixed(1)} hrs</span>
                     <span className="mx-2 text-gray-400">|</span>
-                    <span><strong>Quota Days:</strong> {usage.quota_days} days</span>
-                    <span><strong>Used Days:</strong> {usage.used_days.toFixed(1)} days</span>
-                    <span><strong>Balance Days:</strong> {usage.balance_days.toFixed(1)} days</span>
+                    <span><strong>Validity:</strong> {usage.quota_days} days</span>
+
                   </div>
 
                   {/* Mobile View */}
@@ -250,25 +262,18 @@ function App(): JSX.Element {
               loading={loading}
             />
 
-            <div className="text-right mt-4">
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Logout
-              </button>
-            </div>
+            
           </>
         ) : (
           <div className="mt-20 max-w-md mx-auto bg-white border border-gray-200 shadow-lg rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-3">👋 Welcome to Softmania Labs</h3>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-3">👋 Welcome to SoftMania Labs</h3>
             <p className="text-yellow-500 font-semibold mb-2">It looks like you don’t have a lab assigned yet.</p>
             <p className="text-gray-500">Choose a plan to get started with your personalized lab setup.</p>
 
             <div className="mt-6 flex flex-col gap-3">
               <button
                 onClick={() => router.push('/')}
-                className="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-medium py-2 rounded-xl shadow-sm"
+                className="w-full bg-green-600 hover:bg-green-700 transition-colors text-white font-medium py-2 rounded-xl shadow-sm"
               >
                 Choose Lab Plan
               </button>

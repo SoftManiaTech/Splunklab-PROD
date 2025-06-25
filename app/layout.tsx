@@ -76,7 +76,7 @@ export default function RootLayout({
       </body>
       {/* Version Label Fixed at Bottom Right */}
         <div className="fixed bottom-4 left-4 z-50 text-xs text-gray-500 bg-white/80 border border-gray-200 px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
-          V1.3.0
+          V1.4.0
         </div>
     </html>
   )

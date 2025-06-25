@@ -181,7 +181,7 @@ function App(): JSX.Element {
       <header className="border-b border-gray-100 bg-white/95 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" passHref><SoftmaniaLogo size="md" /></Link>
-          <h2 className="text-xl font-extrabold text-gray-800">Lab Manager Portal</h2>
+          <h2 className="text-xl font-extrabold text-gray-800">Lab Manager</h2>
         </div>
       </header>
 
@@ -251,6 +251,10 @@ function App(): JSX.Element {
                       <p><strong>Balance Hours:</strong> {usage.balance_hours.toFixed(1)} hrs</p>
                     </div>
                   </div>
+                  {/* Add this line below usage summary */}
+                  <p className="mt-3 text-sm text-gray-600">
+                    If you are facing any issues accessing your lab server, please reach out to <a href="mailto:labsupport@softmania.in" className="text-blue-600 underline">labsupport@softmania.in</a>.
+                  </p>
                 </div>
               )}
             </div>
@@ -262,7 +266,7 @@ function App(): JSX.Element {
               loading={loading}
             />
 
-            
+
           </>
         ) : (
           <div className="mt-20 max-w-md mx-auto bg-white border border-gray-200 shadow-lg rounded-2xl p-8 text-center">

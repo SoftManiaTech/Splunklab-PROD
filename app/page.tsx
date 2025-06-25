@@ -28,7 +28,6 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
-  AlertTriangle,
   Menu,
   X,
 } from "lucide-react"
@@ -160,7 +159,6 @@ export default function LabEnvironments() {
   // State for confirmation modal
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
   const [selectedPackageDetails, setSelectedPackageDetails] = useState<SelectedPackageDetails | null>(null)
-  const [eulaAccepted, setEulaAccepted] = useState(false)
   const [policyConfirmed, setPolicyConfirmed] = useState(false)
 
   // Toggle functions for expanding/collapsing sections
@@ -187,18 +185,16 @@ export default function LabEnvironments() {
       components: env.components,
       envTitle: env.title,
     })
-    setEulaAccepted(false) // Reset checkboxes
     setPolicyConfirmed(false) // Reset checkboxes
     setShowConfirmationModal(true)
   }
 
-const handleProceedToPayment = () => {
-  if (selectedPackageDetails?.paymentLink) {
-    window.location.href = selectedPackageDetails.paymentLink
-    setShowConfirmationModal(false)
+  const handleProceedToPayment = () => {
+    if (selectedPackageDetails?.paymentLink) {
+      window.open(selectedPackageDetails.paymentLink, "_blank")
+      setShowConfirmationModal(false)
+    }
   }
-}
-
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -261,10 +257,10 @@ const handleProceedToPayment = () => {
         window.open("https://wa.me/918317349618?text=Hi, I'm interested in Splunk Lab Environments", "_blank")
         break
       case "email":
-        window.open("mailto:labsupport@softmania.in?subject=Splunk Lab Environment Inquiry", "_self")
+        window.open("mailto:info@softmania.in?subject=Splunk Lab Environment Inquiry", "_self")
         break
       case "schedule":
-        window.open("https://bookings.softmania.in/#/211453000001708008", "_blank")
+        window.open("https://bookings.softmania.in/#/services", "_blank")
         break
     }
     setShowContactModal(false)
@@ -314,8 +310,8 @@ const handleProceedToPayment = () => {
                     <DialogTitle className="text-2xl font-medium text-gray-900 mb-4">Important Disclaimer</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
-                    <div className="bg-red-50 border border-red-600 rounded-lg p-6">
-                      <p className="text-gray-700 leading-relaxed text-base">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                      <p className="text-red-700 leading-relaxed text-base">
                         This lab provides infrastructure with pre-installed Splunk under its Free or Trial license. We
                         do not sell or resell Splunk software. All usage is subject to Splunk's official license terms.
                         This service is intended for educational and personal learning only.
@@ -324,7 +320,7 @@ const handleProceedToPayment = () => {
                     <div className="flex justify-end pt-4">
                       <Button
                         onClick={() => setShowDisclaimerModal(false)}
-                        className="bg-red-700 hover:bg-red-800 text-white"
+                        className="bg-red-700 hover:bg-red-600 text-white"
                       >
                         I Understand
                       </Button>
@@ -438,7 +434,7 @@ const handleProceedToPayment = () => {
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
               Choose the perfect environment for your Splunk learning journey
             </p>
-            <p className="text-[10px] text-red-400 dark:text-gray-500 mt-[8px] italic">
+            <p className="text-[11px] text-red-400 dark:text-red-500 mt-[8px] italic">
               (For practice and learning purposes only — not for production use)
             </p>
           </div>
@@ -559,12 +555,13 @@ const handleProceedToPayment = () => {
                           key={index}
                           onClick={() => handlePackageSelect(env, option)} // Changed to open confirmation modal
                           className={`relative p-4 rounded-2xl border text-center cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02]
-    ${selectedPricing[env.id]?.amount === option.amount
-                              ? "border-green-500 bg-green-50 dark:bg-green-950/50 ring-1 ring-green-200 dark:ring-green-800 shadow-md"
-                              : option.popular
-                                ? "border-green-500 bg-green-50 dark:bg-green-950/50 shadow-sm"
-                                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600"
-                            }`}
+    ${
+      selectedPricing[env.id]?.amount === option.amount
+        ? "border-green-500 bg-green-50 dark:bg-green-950/50 ring-1 ring-green-200 dark:ring-green-800 shadow-md"
+        : option.popular
+          ? "border-green-500 bg-green-50 dark:bg-green-950/50 shadow-sm"
+          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600"
+    }`}
                         >
                           {/* Selected Badge */}
                           {selectedPricing[env.id]?.amount === option.amount && (
@@ -625,8 +622,7 @@ const handleProceedToPayment = () => {
               <p className="text-gray-600 text-xs sm:text-sm mt-2 leading-relaxed">
                 You are about to purchase:{" "}
                 <span className="font-semibold text-green-700 block sm:inline mt-1 sm:mt-0">
-                  {selectedPackageDetails.envTitle} - ₹{selectedPackageDetails.amount} ({selectedPackageDetails.hours}{" "}
-                  hours)
+                  {selectedPackageDetails.envTitle}
                 </span>
               </p>
             )}
@@ -643,14 +639,28 @@ const handleProceedToPayment = () => {
                 <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Validity Information:</h4>
-                  <p className="leading-relaxed text-xs sm:text-sm">
-                    Your server will be terminated based on whichever comes first:{" "}
-                    <span className="font-medium">{selectedPackageDetails?.hours} hours of usage</span> or approximately{" "}
-                    <span className="font-medium">
-                      {selectedPackageDetails ? Math.ceil(selectedPackageDetails.hours / 2) : 0} days
-                    </span>{" "}
-                    from the time of provisioning.
-                  </p>
+                  <ul className="leading-relaxed text-xs sm:text-sm space-y-1">
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Your server will be terminated based on whichever comes first:</span>
+                    </li>
+                    <li className="flex items-start gap-2 ml-4">
+                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>
+                        Usage of <span className="font-medium">{selectedPackageDetails?.hours} hours</span>
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 ml-4">
+                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>
+                        Approximately{" "}
+                        <span className="font-medium">
+                          {selectedPackageDetails ? Math.ceil(selectedPackageDetails.hours / 2) : 0} days
+                        </span>{" "}
+                        from the time of provisioning.
+                      </span>
+                    </li>
+                  </ul>
                 </div>
               </div>
 
@@ -665,58 +675,41 @@ const handleProceedToPayment = () => {
                     <p className="leading-relaxed text-xs sm:text-sm">
                       Do you have a Splunk Developer License? If not, you can apply for one{" "}
                       <a
-                        href="https://dev.splunk.com/enterprise/dev_license"
+                        href="https://www.splunk.com/en_us/form/developer-license.html"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline font-medium"
                       >
-                        here
+                        here.
                       </a>
                     </p>
                   </div>
                 </div>
               )}
-
-              {/* No Refund Policy */}
-              <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-red-50 rounded-lg border border-red-200">
-                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">No Refund Policy:</h4>
-                  <p className="leading-relaxed text-xs sm:text-sm">
-                    No refunds are provided. Server provisioning starts immediately after purchase.
-                  </p>
-                </div>
-              </div>
             </div>
 
             {/* Checkboxes */}
             <div className="space-y-3 sm:space-y-4 pt-2">
-              {selectedPackageDetails?.envTitle === "Splunk Distributed Cluster" && (
-                <div className="flex items-start space-x-2 sm:space-x-3">
-                  <Checkbox
-                    id="eula"
-                    checked={eulaAccepted}
-                    onCheckedChange={(checked) => setEulaAccepted(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <label htmlFor="eula" className="text-xs sm:text-sm font-medium leading-relaxed cursor-pointer">
-                    Splunk is a registered trademark of Splunk Inc. Software used is under Splunk's Free or Trial
-                    license. Users must adhere to Splunk's EULA.
-                  </label>
-                </div>
-              )}
               <div className="flex items-start space-x-2 sm:space-x-3">
                 <Checkbox
                   id="policy-confirm"
                   checked={policyConfirmed}
-                  onCheckedChange={(checked) => setPolicyConfirmed(checked === true)}
+                  onCheckedChange={setPolicyConfirmed}
                   className="mt-0.5"
                 />
                 <label
                   htmlFor="policy-confirm"
                   className="text-xs sm:text-sm font-medium leading-relaxed cursor-pointer"
                 >
-                  I understand and agree to the above terms (Validity, License, and No Refund).
+                  I understand and agree to{" "}
+                  <Link href="/terms" className="text-blue-600 hover:underline font-medium">
+                    terms and conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/refund" className="text-blue-600 hover:underline font-medium">
+                    refund policy
+                  </Link>
+                  .
                 </label>
               </div>
             </div>
@@ -734,10 +727,7 @@ const handleProceedToPayment = () => {
               </Button>
               <Button
                 onClick={handleProceedToPayment}
-                disabled={
-                  !policyConfirmed ||
-                  (selectedPackageDetails?.envTitle === "Splunk Distributed Cluster" && !eulaAccepted)
-                }
+                disabled={!policyConfirmed}
                 className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto order-1 sm:order-2"
               >
                 Proceed to Payment
@@ -1056,7 +1046,7 @@ const handleProceedToPayment = () => {
 
             {/* Bottom Section: Professional Disclaimer */}
             <div className="max-w-4xl mx-auto text-center">
-              <div className="bg-red-50 dark:bg-red-800 rounded-lg p-4 sm:p-6 border border-red-400 dark:border-gray-700">
+              <div className="bg-red-50 dark:bg-red-800 rounded-lg p-4 sm:p-6 border border-red-400 dark:border-red-700">
                 <h4 className="text-sm font-semibold text-red-700 dark:text-white mb-2">
                   Independent Service Disclaimer
                 </h4>

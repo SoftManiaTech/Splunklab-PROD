@@ -434,7 +434,7 @@ export default function LabEnvironments() {
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
               Choose the perfect environment for your Splunk learning journey
             </p>
-            <p className="text-[11px] text-red-400 dark:text-red-500 mt-[8px] italic">
+            <p className="text-[14px] text-red-500 font-bold dark:text-red-500 mt-[8px] italic">
               (For practice and learning purposes only — not for production use)
             </p>
           </div>

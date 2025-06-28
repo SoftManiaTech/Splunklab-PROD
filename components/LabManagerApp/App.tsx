@@ -21,6 +21,7 @@ function App(): JSX.Element {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [hasLab, setHasLab] = useState<boolean | null>(null);
   const router = useRouter();
+  const [userName, setUserName] = useState<string>('');
 
   const SECRET_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'softmania_secret';
 
@@ -130,11 +131,14 @@ function App(): JSX.Element {
       const decoded: any = jwtDecode(credentialResponse.credential);
       const userEmail = decoded.email;
       const loginTime = new Date().getTime();
+      const fullName = decoded.name;
 
       localStorage.setItem('userEmail', encrypt(userEmail));
+      localStorage.setItem('userName', encrypt(fullName));
       localStorage.setItem('loginTime', encrypt(loginTime.toString()));
 
       setEmail(userEmail);
+      setUserName(fullName);
 
       const userHasLab = await checkIfUserHasLab(userEmail);
       if (userHasLab) {
@@ -150,6 +154,10 @@ function App(): JSX.Element {
 
     if (encryptedEmail && encryptedLoginTime) {
       const storedEmail = decrypt(encryptedEmail);
+      const encryptedName = localStorage.getItem('userName');
+      const storedName = encryptedName ? decrypt(encryptedName) : '';
+      setUserName(storedName);
+
       const loginTime = parseInt(decrypt(encryptedLoginTime), 10);
 
       const now = new Date().getTime();
@@ -166,6 +174,8 @@ function App(): JSX.Element {
       } else {
         localStorage.removeItem('userEmail');
         localStorage.removeItem('loginTime');
+        localStorage.removeItem('userName');
+        setUserName('');
       }
     }
   }, []);
@@ -215,7 +225,7 @@ function App(): JSX.Element {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
                   <h2 className="text-lg text-[#2c3e50] font-bold">
-                    Welcome back, <span className="text-[#007acc]">{getUsernameFromEmail(email)}</span>
+                    Welcome back, <span className="text-[#007acc]">{userName}</span>
                   </h2>
                   <p className="text-sm text-[#34495e]">
                     This is your personal <strong>Lab server Manager Dashboard</strong> 🚀

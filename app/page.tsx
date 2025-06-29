@@ -310,8 +310,8 @@ export default function LabEnvironments() {
                     <DialogTitle className="text-2xl font-medium text-gray-900 mb-4">Important Disclaimer</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                      <p className="text-red-700 leading-relaxed text-base">
+                    <div className="bg-red-50 border border-red-400 rounded-lg p-6">
+                      <p className="text-gray-700 leading-relaxed text-base">
                         This lab provides infrastructure with pre-installed Splunk under its Free or Trial license. We
                         do not sell or resell Splunk software. All usage is subject to Splunk's official license terms.
                         This service is intended for educational and personal learning only.
@@ -320,7 +320,7 @@ export default function LabEnvironments() {
                     <div className="flex justify-end pt-4">
                       <Button
                         onClick={() => setShowDisclaimerModal(false)}
-                        className="bg-red-700 hover:bg-red-600 text-white"
+                        className="bg-red-800 hover:bg-red-700 text-white"
                       >
                         I Understand
                       </Button>
@@ -373,7 +373,7 @@ export default function LabEnvironments() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full justify-start hover:bg-blue-50 border-blue-500"
+                      className="w-full justify-start hover:bg-red-50 border-red-500"
                       onClick={closeMobileMenu}
                     >
                       <Info className="w-4 h-4 mr-2" />
@@ -434,7 +434,7 @@ export default function LabEnvironments() {
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
               Choose the perfect environment for your Splunk learning journey
             </p>
-            <p className="text-[14px] text-red-500 font-bold dark:text-red-500 mt-[8px] italic">
+            <p className="text-[14px] text-red-400 font-bold dark:text-red-500 mt-[8px] italic">
               (For practice and learning purposes only — not for production use)
             </p>
           </div>
@@ -675,13 +675,15 @@ export default function LabEnvironments() {
                     <p className="leading-relaxed text-xs sm:text-sm">
                       Do you have a Splunk Developer License? If not, you can apply for one{" "}
                       <a
-                        href="https://www.splunk.com/en_us/form/developer-license.html"
+                        href="https://dev.splunk.com/enterprise/dev_license"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline font-medium"
                       >
-                        here.
+                        here
                       </a>
+                      . If you have a license, proceed with payment; otherwise, apply for the license and then proceed
+                      once you have it.
                     </p>
                   </div>
                 </div>

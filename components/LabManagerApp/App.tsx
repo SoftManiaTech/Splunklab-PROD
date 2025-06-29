@@ -8,7 +8,7 @@ import EC2Table from './components/EC2Table';
 import { SoftmaniaLogo } from "@/components/softmania-logo";
 import Link from 'next/link';
 import * as CryptoJS from 'crypto-js';
-import { RefreshCcw } from 'lucide-react';
+import { DownloadIcon, RefreshCcw } from 'lucide-react';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID as string;
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
@@ -37,6 +37,7 @@ function App(): JSX.Element {
   } | null>(null);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [pemFiles, setPemFiles] = useState<{ filename: string; url: string }[]>([]);
 
   const encrypt = (data: string): string => {
     return CryptoJS.AES.encrypt(data, SECRET_KEY).toString();
@@ -109,6 +110,20 @@ function App(): JSX.Element {
     }
   };
 
+  const fetchPemFiles = async (userEmail: string) => {
+    try {
+      const res = await fetch(`${API_URL}/get-user-keys`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail }),
+      });
+      const data = await res.json();
+      setPemFiles(data.files || []);
+    } catch (error) {
+      console.error('Error fetching PEM files:', error);
+    }
+  };
+
   const checkIfUserHasLab = async (userEmail: string) => {
     try {
       const res = await fetch(`${API_URL}/check-user-lab`, {
@@ -144,6 +159,7 @@ function App(): JSX.Element {
       if (userHasLab) {
         fetchInstances(userEmail);
         fetchUsageSummary(userEmail);
+        fetchPemFiles(userEmail);
       }
     }
   };
@@ -169,6 +185,7 @@ function App(): JSX.Element {
           if (has) {
             fetchInstances(storedEmail);
             fetchUsageSummary(storedEmail);
+            fetchPemFiles(storedEmail);
           }
         });
       } else {
@@ -194,13 +211,16 @@ function App(): JSX.Element {
   const confirmLogout = () => {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('loginTime');
+    localStorage.removeItem('userName');
     setEmail('');
     setInstances([]);
     setUsage(null);
     setHasLab(null);
+    setPemFiles([]);
     setShowLogoutModal(false);
   };
   const cancelLogout = () => setShowLogoutModal(false);
+
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
@@ -314,6 +334,31 @@ function App(): JSX.Element {
               setInstances={setInstances}
               loading={loading}
             />
+
+            {pemFiles.length > 0 && (
+              <div className="bg-white shadow-md rounded-2xl p-5 mb-6 border border-gray-200 mt-[10px]">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Your SSH PEM Files</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {pemFiles.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border hover:shadow-lg transition-all duration-300"
+                    >
+                      <span className="font-medium text-gray-700">{file.filename}</span>
+                      <a
+                        href={file.url}
+                        download={file.filename}
+                        className="text-green-600 hover:text-green-800 flex items-center gap-2"
+                      >
+                        <span className="hidden sm:inline">Download</span>
+                        <DownloadIcon className="w-5 h-5" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </>
         ) : (
           <div className="mt-20 max-w-md mx-auto bg-white border border-gray-200 shadow-lg rounded-2xl p-8 text-center">

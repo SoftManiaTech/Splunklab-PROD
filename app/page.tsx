@@ -190,11 +190,12 @@ export default function LabEnvironments() {
   }
 
   const handleProceedToPayment = () => {
-    if (selectedPackageDetails?.paymentLink) {
-      window.open(selectedPackageDetails.paymentLink, "_blank")
-      setShowConfirmationModal(false)
-    }
+  if (selectedPackageDetails?.paymentLink) {
+    window.location.href = selectedPackageDetails.paymentLink;
+    setShowConfirmationModal(false);
   }
+}
+
 
   // Prevent body scroll when modal is open
   useEffect(() => {

@@ -53,6 +53,12 @@ function App(): JSX.Element {
     }
   };
 
+  const getUsernameFromEmail = (email: string): string => {
+    if (!email) return '';
+    const namePart = email.split('@')[0];
+    return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+  };
+
   const formatFloatHours = (hours: number): string => {
     const h = Math.floor(hours);
     const m = Math.round((hours - h) * 60);
@@ -219,6 +225,7 @@ function App(): JSX.Element {
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
 
+
       <div style={{ padding: 20 }}>
         {!email ? (
           <div className="flex flex-col items-center justify-center mt-16">
@@ -229,6 +236,76 @@ function App(): JSX.Element {
           <div className="text-center mt-10 text-gray-600">Checking your lab assignment...</div>
         ) : hasLab ? (
           <>
+            <div className="bg-[#f4f6fa] shadow-sm rounded-lg pr-3 pl-3 pb-3 mb-6">
+              {usage && (
+                <div className="w-full text-sm mt-4">
+                  {(usage.balance_hours <= 0 || usage.balance_days <= 0) && (
+                    <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-md px-4 py-2 mb-3">
+                      ⚠️ <strong>Your purchased quota has finished.</strong> Your instance will be terminated soon.
+                    </div>
+                  )}
+
+                  {/* Desktop View */}
+                  <div className={`hidden sm:flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-4 py-3 ${usage.balance_hours <= 0 || usage.balance_days <= 0
+                    ? 'bg-red-50 border border-red-200 text-red-800'
+                    : 'bg-green-50 border border-green-200 text-gray-800'
+                    }`}>
+                    <span><strong>Quota Hours:</strong> {formatFloatHours(usage.quota_hours)} hrs</span>
+                    <span><strong>Used Hours:</strong> {formatFloatHours(usage.used_hours)} hrs</span>
+                    <span><strong>Balance Hours:</strong> {formatFloatHours(usage.balance_hours)} hrs</span>
+                    <span className="mx-2 text-gray-400">|</span>
+                    <span><strong>Validity:</strong> {usage.quota_days} days</span>
+                    <span><strong>Plan Start Date:</strong> {usage.plan_start_date || 'N/A'}</span>
+                    <span className="flex items-center gap-2">
+                      <strong>Plan End Date:</strong> {usage.plan_end_date || 'N/A'}
+                      <span className="text-red-500">(will be terminated on this date.)</span>
+                      <button
+                        onClick={() => fetchUsageSummary(email)}
+                        disabled={refreshing}
+                        className={`p-2 rounded-full ${refreshing ? 'bg-gray-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-gray-700'} text-white`}
+                        title="Refresh"
+                      >
+                        <RefreshCcw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                      </button>
+                    </span>
+                  </div>
+
+                  {/* Mobile View */}
+                  <div className={`sm:hidden flex flex-col gap-3 rounded-lg px-4 py-3 ${usage.balance_hours <= 0 || usage.balance_days <= 0
+                    ? 'bg-red-50 border border-red-200 text-red-800'
+                    : 'bg-green-50 border border-green-200 text-gray-800'
+                    }`}>
+                    <div className="flex flex-col gap-1">
+                      <p><strong>Quota Days:</strong> {usage.quota_days} days</p>
+                      <p><strong>Used Days:</strong> {usage.used_days.toFixed(1)} days</p>
+                      <p><strong>Balance Days:</strong> {usage.balance_days.toFixed(1)} days</p>
+                      <p><strong>Plan Start Date:</strong> {usage.plan_start_date || 'N/A'}</p>
+                      <div className="flex items-center gap-2">
+                        <p><strong>Plan End Date:</strong> {usage.plan_end_date || 'N/A'} <span className="text-gray-500">(will be terminated on this date.)</span></p>
+                        <button
+                          onClick={() => fetchUsageSummary(email)}
+                          disabled={refreshing}
+                          className={`p-2 rounded-full ${refreshing ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} text-white`}
+                          title="Refresh"
+                        >
+                          <RefreshCcw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 pt-2 border-t border-current">
+                      <p><strong>Quota Hours:</strong> {formatFloatHours(usage.quota_hours)} hrs</p>
+                      <p><strong>Used Hours:</strong> {formatFloatHours(usage.used_hours)} hrs</p>
+                      <p><strong>Balance Hours:</strong> {formatFloatHours(usage.balance_hours)} hrs</p>
+                    </div>
+                  </div>
+
+                  <p className="mt-3 text-sm text-gray-600">
+                    If you are facing any issues accessing your lab server, please reach out to <a href="mailto:labsupport@softmania.in" className="text-blue-600 underline">labsupport@softmania.in</a>.
+                  </p>
+                </div>
+              )}
+            </div>
+
             <EC2Table
               email={email}
               instances={instances}
@@ -239,7 +316,7 @@ function App(): JSX.Element {
             {pemFiles.length > 0 && (
               <div className="bg-white shadow-md rounded-2xl p-5 mb-6 border border-gray-200 mt-[10px]">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">SSH PEM Files</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {pemFiles.map((file, idx) => (
                     <div
                       key={idx}

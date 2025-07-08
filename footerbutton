@@ -1,0 +1,268 @@
+<script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}</script><script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siqe9fde7d2e5b61f55875db0dbc7de6943d79848355620ac9f700753b8e2f0fe8f" defer></script>
+
+<!-- Floating WhatsApp Widget with Question Prompt -->
+<div class="whatsapp-container">
+  <div class="whatsapp-box" id="whatsapp-box">
+    <textarea id="whatsapp-message" placeholder="What would you like to ask? (e.g. ‘Is there any Live Q&A Sessions?’)"></textarea>
+    <button onclick="sendToWhatsApp()">Send</button>
+  </div>
+
+  <a class="whatsapp-float" onclick="toggleWhatsAppBox()" title="Chat with us on WhatsApp">
+    <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
+  </a>
+</div>
+
+<style>
+  .whatsapp-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 999;
+  }
+
+  .whatsapp-float {
+    width: 60px;
+    height: 60px;
+    background-color: #25D366;
+    color: white;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .whatsapp-float img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .whatsapp-box {
+    display: none;
+    flex-direction: column;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    width: 260px;
+  }
+
+  .whatsapp-box textarea {
+    resize: none;
+    padding: 10px;
+    height: 100px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .whatsapp-box button {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .whatsapp-box button:hover {
+    background-color: #1ebe5d;
+  }
+</style>
+
+<script>
+  function toggleWhatsAppBox() {
+    const box = document.getElementById('whatsapp-box');
+    box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+  }
+
+  function sendToWhatsApp() {
+    const message = document.getElementById('whatsapp-message').value.trim();
+    if (message !== '') {
+      const encodedMessage = encodeURIComponent(message);
+      const phoneNumber = '918317349618';
+      window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+    }
+  }
+</script>
+
+<!-- Floating Labs Button & Modal Styles -->
+<style>
+  /* Floating Button */
+    #labButton {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: linear-gradient(176deg, #820f0f, #b02b0f);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    padding: 12px 24px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    font-family: sans-serif;
+    transition: transform 0.3s ease;
+  }
+
+  #labButton:hover {
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  /* Modal Base */
+  #labIframeModal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 0.3s, opacity 0.3s ease-in-out;
+  }
+
+  #labIframeModal.active {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+
+  /* Apple-like popup animation */
+  .lab-content {
+    width: 1400px;
+    height: 600px;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: all 0.4s ease;
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  #labIframeModal.active .lab-content {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .lab-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  #labModalClose {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: #dc2626;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    z-index: 10001;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1500px) {
+    .lab-content {
+      width: 90%;
+      height: 90%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #labButton {
+      padding: 10px 18px;
+      font-size: 14px;
+    }
+  }
+
+  /* Prevent background scroll when modal open */
+  body.modal-open {
+    overflow: hidden;
+  }
+</style>
+
+<!-- Floating Button -->
+<button id="labButton">
+  🔬 Labs
+</button>
+
+<!-- Modal -->
+<script>
+  let labWindow = null;
+
+  document.getElementById("labButton").addEventListener("click", () => {
+    const width = 1200;
+    const height = 650;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    const labUrl = "https://splunklab.softmania.in/lab-embed";
+
+    // If window exists and not closed → close it
+    if (labWindow && !labWindow.closed) {
+      labWindow.close();
+      labWindow = null;
+    } else {
+      // Open new popup
+      labWindow = window.open(
+        labUrl,
+        "SplunkLabs",
+        `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`
+      );
+
+      // If blocked (like mobile), fallback to redirect
+      if (!labWindow) {
+        window.location.href = labUrl;
+      }
+    }
+  });
+</script>
+
+<!-- JavaScript Logic -->
+<script>
+  const labButton = document.getElementById('labButton');
+  const labModal = document.getElementById('labIframeModal');
+  const closeBtn = document.getElementById('labModalClose');
+
+  function toggleModal() {
+    const isActive = labModal.classList.contains('active');
+    if (isActive) {
+      labModal.classList.remove('active');
+      document.body.classList.remove('modal-open');
+    } else {
+      labModal.classList.add('active');
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  labButton.addEventListener('click', toggleModal);
+  closeBtn.addEventListener('click', toggleModal);
+
+  // Close modal if clicked outside the popup content
+  labModal.addEventListener('click', (e) => {
+    if (e.target === labModal) {
+      toggleModal();
+    }
+  });
+</script>

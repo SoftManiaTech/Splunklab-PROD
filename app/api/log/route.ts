@@ -11,7 +11,8 @@ export async function POST(req: NextRequest) {
 
     const payload = {
       time: Math.floor(Date.now() / 1000),
-      host: "nextjs-client",
+      index: "splunk_lab_wiz",
+      host: "userslogs",
       source: "nextjs-api-proxy",
       sourcetype: "_json",
       event: {

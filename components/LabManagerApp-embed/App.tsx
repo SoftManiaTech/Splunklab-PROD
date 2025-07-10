@@ -155,6 +155,16 @@ function App(): JSX.Element {
       setEmail(userEmail);
       setUserName(fullName);
 
+      await fetch(`${API_URL}/log-user-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userEmail,
+          name: fullName,
+          login_time: new Date().toISOString()
+        }),
+      });
+
       const userHasLab = await checkIfUserHasLab(userEmail);
       if (userHasLab) {
         fetchInstances(userEmail);
@@ -227,6 +237,7 @@ function App(): JSX.Element {
 
 
       <div style={{ padding: 20 }}>
+
         {!email ? (
           <div className="flex flex-col items-center justify-center mt-16">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">Login using Google</h2>
@@ -237,6 +248,15 @@ function App(): JSX.Element {
         ) : hasLab ? (
           <>
             <div className="bg-[#f4f6fa] shadow-sm rounded-lg pr-3 pl-3 pb-3 mb-6">
+              <div className="flex justify-end mt-2">
+                <button
+                  onClick={handleLogout}
+                  className="mt-4 sm:mt-0 bg-red-500 text-white px-2 text-sm py-1 rounded hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              </div>
+
               {usage && (
                 <div className="w-full text-sm mt-4">
                   {(usage.balance_hours <= 0 || usage.balance_days <= 0) && (

@@ -155,6 +155,17 @@ function App(): JSX.Element {
       setEmail(userEmail);
       setUserName(fullName);
 
+      await fetch(`${API_URL}/log-user-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userEmail,
+          name: fullName,
+          login_time: new Date().toISOString()
+        }),
+      });
+
+
       const userHasLab = await checkIfUserHasLab(userEmail);
       if (userHasLab) {
         fetchInstances(userEmail);

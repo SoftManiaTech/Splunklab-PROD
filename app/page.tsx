@@ -310,7 +310,7 @@ export default function LabEnvironments() {
           action: "devtools_detected",
           title: "DevTools Detected",
         });
-        window.location.href = "https://splunklab.softmania.com/blocked";
+        window.location.href = "https://splunklab.softmania.in/blocked";
       }
     };
 
@@ -400,28 +400,28 @@ export default function LabEnvironments() {
               </div>
               {selectedPackageDetails?.envTitle ===
                 "Splunk Distributed Cluster" && (
-                <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <Server className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
-                      Splunk Developer License:
-                    </h4>
-                    <p className="leading-relaxed text-xs sm:text-sm">
-                      Do you have a Splunk Developer License? If not, you can
-                      apply for one{" "}
-                      <a
-                        href="https://dev.splunk.com/enterprise/dev_license"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline font-medium"
-                      >
-                        here
-                      </a>
-                      .
-                    </p>
+                  <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-purple-50 rounded-lg border border-purple-200">
+                    <Server className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
+                        Splunk Developer License:
+                      </h4>
+                      <p className="leading-relaxed text-xs sm:text-sm">
+                        Do you have a Splunk Developer License? If not, you can
+                        apply for one{" "}
+                        <a
+                          href="https://dev.splunk.com/enterprise/dev_license"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline font-medium"
+                        >
+                          here
+                        </a>
+                        .
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             <div className="space-y-3 sm:space-y-4 pt-2">
@@ -533,13 +533,13 @@ export default function LabEnvironments() {
               Payment Successful!
             </h2>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              Your lab setup ticket has been created.
+              Your lab setup ticket has been created successfully.
               <br />
-              Please check your email for confirmation.
+              Lab setup in progress — ready within <strong>20-30 mins</strong>.
               <br />
-              Lab will be delivered within <strong>
-                10–12 hours
-              </strong> during <strong>10 AM – 6 PM IST</strong>.
+              You'll get a welcome email once it's live.
+              <br />
+              Server auto-stops after <strong>2 hours</strong>, or stop manually to save usage.
             </p>
           </div>
         </div>

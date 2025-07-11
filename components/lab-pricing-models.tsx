@@ -29,9 +29,6 @@ interface EnvironmentOption {
   redirectUrl: string
   color: string
   bgColor: string
-  demoVideoId: string
-  demoTitle: string
-  demoDuration: string
 }
 
 interface LabPricingModelsProps {
@@ -48,24 +45,21 @@ const environments: EnvironmentOption[] = [
     description: "Single instance with BOTSv3 dataset for hands-on security training and threat hunting practice.",
     features: [
       "Pre-configured Splunk instance (optional)",
-      "BOTSv3 Security Dataset (Real-world logs for threat hunting). (optional)",
+      "BOTSv3 – Real-world logs with Splunk tutorial data. (optional)",
       "Supporting Add-ons for seamless data ingestion. (optional)",
     ],
     info: ["(OS: Red Hat-9) (RAM: 4 GB) (vCPUs: 2)", "Splunk Enterprise Version: 9.4.1"],
     components: ["Splunk Enterprise"],
     pricing: [
-      { amount: 100, hours: 10, paymentLink: "https://pages.razorpay.com/Splunk-SE-100" },
-      { amount: 200, hours: 21, paymentLink: "https://pages.razorpay.com/Splunk-SE-200" },
-      { amount: 300, hours: 33, paymentLink: "https://pages.razorpay.com/Splunk-SE-300" },
-      { amount: 400, hours: 45, paymentLink: "https://pages.razorpay.com/Splunk-SE-400" },
-      { amount: 500, hours: 56, paymentLink: "https://pages.razorpay.com/Splunk-SE-500" },
+      { amount: 100, hours: 6, paymentLink: "https://pages.razorpay.com/Splunk-SE-100" },
+      { amount: 200, hours: 14, paymentLink: "https://pages.razorpay.com/Splunk-SE-200" },
+      { amount: 300, hours: 23, paymentLink: "https://pages.razorpay.com/Splunk-SE-300" },
+      { amount: 400, hours: 31, paymentLink: "https://pages.razorpay.com/Splunk-SE-400" },
+      { amount: 500, hours: 40, paymentLink: "https://pages.razorpay.com/Splunk-SE-500" },
     ],
     redirectUrl: "https://softmania.com/splunk-standalone-lab",
     color: "text-green-600",
     bgColor: "bg-green-50 dark:bg-green-950/50",
-    demoVideoId: "dQw4w9WgXcQ",
-    demoTitle: "Standalone Server Complete Walkthrough",
-    demoDuration: "8:45",
   },
   {
     id: "distributed",
@@ -76,22 +70,19 @@ const environments: EnvironmentOption[] = [
     features: [
       "4-component architecture",
       "Distributed search capabilities",
-      "BOTSv3 Security Dataset (Real-world logs for threat hunting). (optional)",
+      "BOTSv3 – Real-world logs with Splunk tutorial data. (optional)",
     ],
     info: ["(OS: Red Hat-9) (RAM: 4 GB) (vCPUs: 2)", "Splunk Enterprise Version: 9.4.1"],
     components: ["Search Head", "Indexer", "Heavy Forwarder", "Universal Forwarder"],
     pricing: [
-      { amount: 200, hours: 4, paymentLink: "https://pages.razorpay.com/Splunk-DNC-200" },
-      { amount: 500, hours: 13, paymentLink: "https://pages.razorpay.com/Splunk-DNC-500" },
-      { amount: 1000, hours: 27, paymentLink: "https://pages.razorpay.com/Splunk-DNC-1000", popular: true },
-      { amount: 1500, hours: 42, paymentLink: "https://pages.razorpay.com/Splunk-DNC-1500" },
+      { amount: 200, hours: 3, paymentLink: "https://pages.razorpay.com/Splunk-DNC-200" },
+      { amount: 500, hours: 10, paymentLink: "https://pages.razorpay.com/Splunk-DNC-500" },
+      { amount: 1000, hours: 21, paymentLink: "https://pages.razorpay.com/Splunk-DNC-1000", popular: true },
+      { amount: 1500, hours: 31, paymentLink: "https://pages.razorpay.com/Splunk-DNC-1500" },
     ],
     redirectUrl: "https://softmania.com/splunk-distributed-lab",
     color: "text-emerald-600",
     bgColor: "bg-emerald-50 dark:bg-emerald-950/50",
-    demoVideoId: "dQw4w9WgXcQ",
-    demoTitle: "Distributed Environment Deep Dive",
-    demoDuration: "12:30",
   },
   {
     id: "clustered",
@@ -103,23 +94,20 @@ const environments: EnvironmentOption[] = [
     features: [
       "Search head cluster (3 nodes)",
       "Indexer cluster (3 nodes)",
-      "Management server features (Deployer, License manager, Deployment server, Monitoring Console)",
+      "Management server (Deployer, License manager, Deployment server, Monitoring Console)",
     ],
     info: ["(OS: Red Hat-9) (RAM: 4 GB) (vCPUs: 2)", "Splunk Enterprise Version: 9.4.1"],
     components: ["SH Cluster", "IDX Cluster", "Cluster Master", "HF", "Management server"],
     pricing: [
-      { amount: 1000, hours: 11, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000" },
-      { amount: 2000, hours: 23, paymentLink: "https://pages.razorpay.com/Splunk-DC-2000" },
-      { amount: 3000, hours: 37, paymentLink: "https://pages.razorpay.com/Splunk-DC-3000", popular: true },
-      { amount: 4000, hours: 49, paymentLink: "https://pages.razorpay.com/Splunk-DC-4000" },
-      { amount: 5000, hours: 62, paymentLink: "https://pages.razorpay.com/Splunk-DC-5000" },
+      { amount: 1000, hours: 9, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000" },
+      { amount: 2000, hours: 19, paymentLink: "https://pages.razorpay.com/Splunk-DC-2000" },
+      { amount: 3000, hours: 28, paymentLink: "https://pages.razorpay.com/Splunk-DC-3000", popular: true },
+      { amount: 4000, hours: 38, paymentLink: "https://pages.razorpay.com/Splunk-DC-4000" },
+      { amount: 5000, hours: 47, paymentLink: "https://pages.razorpay.com/Splunk-DC-5000" },
     ],
     redirectUrl: "https://softmania.com/splunk-cluster-lab",
     color: "text-purple-600",
     bgColor: "bg-purple-50 dark:bg-purple-950/50",
-    demoVideoId: "dQw4w9WgXcQ",
-    demoTitle: "Enterprise Cluster Architecture Tour",
-    demoDuration: "15:20",
   },
 ]
 

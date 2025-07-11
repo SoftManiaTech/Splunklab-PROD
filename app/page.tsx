@@ -37,21 +37,29 @@ const getClientIp = async () => {
 const sendLogToSplunk = async ({
   sessionId = "anonymous-session",
   action = "unknown_action",
+  title = "User Event",
+  browser = navigator.userAgent,
+  ipOverride,
   details = {},
 }: {
   sessionId?: string;
   action: string;
+  title?: string;
+  browser?: string;
+  ipOverride?: string;
   details?: Record<string, any>;
 }) => {
   try {
-    const ip = await getClientIp();
+    const ip = ipOverride || (await getClientIp());
 
-    const payload = {
-      ip,
+    const payload: Record<string, any> = {
+      title,
+      action,
       session: sessionId,
-      event: action,
-      browser: navigator.userAgent,
-      extra: details,
+      ip,
+      browser,
+      timestamp: new Date().toISOString(),
+      ...details, // Merge in amount, hours, etc.
     };
 
     await fetch("/api/log", {
@@ -126,6 +134,8 @@ export default function LabEnvironments() {
               ip: "pending",
               session: sessionId.current,
               event: "User Session Ended",
+              action: "user_session_ended",
+              title: "User session ended",
               browser: navigator.userAgent,
               extra: {
                 durationInSeconds,
@@ -162,13 +172,15 @@ export default function LabEnvironments() {
     option: (typeof env.pricing)[0]
   ) => {
     const planSessionId = `PLAN-${Math.random().toString(36).substring(2, 10)}`;
+
     sendLogToSplunk({
       sessionId: planSessionId,
-      action: "Selected Package",
+      action: "select_package",
+      title: "User selected a package",
       details: {
-        title: env.title,
         amount: option.amount,
         hours: option.hours,
+        envTitle: env.title,
       },
     });
 
@@ -181,7 +193,9 @@ export default function LabEnvironments() {
     });
 
     event({
-      action: "select_package",
+      // action: "select_package",
+      action: "user_selected_package",
+      title: "User selected package",
       params: {
         package_name: env.title,
         amount: option.amount,
@@ -197,7 +211,9 @@ export default function LabEnvironments() {
   const handleProceedToPayment = () => {
     sendLogToSplunk({
       sessionId: sessionId.current,
-      action: "Clicked Proceed to Payment",
+      action: "user_clicked_payment",
+      title: "User clicked payment",
+
       details: {
         package: selectedPackageDetails?.envTitle,
         amount: selectedPackageDetails?.amount,
@@ -223,12 +239,14 @@ export default function LabEnvironments() {
     if (navType === "reload" || !isFirstVisit) {
       sendLogToSplunk({
         sessionId: sessionId.current,
-        action: "Reloaded LabEnvironments Page",
+        action: "user_reloaded_environment",
+        title: "User reloaded environment",
       });
     } else {
       sendLogToSplunk({
         sessionId: sessionId.current,
-        action: "Visited LabEnvironments Page",
+        action: "user_visited_environment",
+        title: "User visited environment",
       });
       sessionStorage.setItem("lab-page-visited", "true");
     }
@@ -238,7 +256,8 @@ export default function LabEnvironments() {
     if (params.get("payment") === "success") {
       sendLogToSplunk({
         sessionId: sessionId.current,
-        action: "Payment Success",
+        action: "payment_success",
+        title: "Payment success",
       });
       setShowSuccessPopup(true);
       event({
@@ -250,7 +269,8 @@ export default function LabEnvironments() {
     if (params.get("payment") === "failure") {
       sendLogToSplunk({
         sessionId: sessionId.current,
-        action: "Payment Failure",
+        action: "payment_failure",
+        title: "Payment failure",
       });
       event({
         action: "payment_failure",
@@ -287,7 +307,8 @@ export default function LabEnvironments() {
       if (window.outerHeight - window.innerHeight > threshold) {
         sendLogToSplunk({
           sessionId: sessionId.current,
-          action: "DevTools Detected",
+          action: "devtools_detected",
+          title: "DevTools Detected",
         });
         window.location.href = "https://splunklab.softmania.com/blocked";
       }
@@ -304,7 +325,8 @@ export default function LabEnvironments() {
           setShowContactModal(true);
           sendLogToSplunk({
             sessionId: sessionId.current,
-            action: "Opened Contact Modal",
+            action: "user_clicked_contact",
+            title: "User clicked contact",
             details: { source: "header_contact" },
           });
         }}
@@ -478,7 +500,9 @@ export default function LabEnvironments() {
         onClick={() => {
           sendLogToSplunk({
             sessionId: sessionId.current,
-            action: "Clicked FAQ",
+            action: "user_clicked_faq",
+            title: "User clicked FAQ",
+
             details: {
               location: "LabEnvironments Page",
               timestamp: new Date().toISOString(),

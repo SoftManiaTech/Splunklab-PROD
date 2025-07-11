@@ -16,21 +16,21 @@ export const logToSplunk = async ({
     const authSession = await getSession();
     const user = authSession?.user;
 
+    const payload = {
+      ip,
+      session: user?.email || session || "guest-session",
+      action,
+      browser: navigator.userAgent,
+      name: user?.name || null,
+      email: user?.email || null,
+      timestamp: new Date().toISOString(),
+      ...details, // attach any custom data like instanceId, region etc.
+    };
+
     await fetch("/api/log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ip,
-        session: user?.email || session || "guest-session",
-        event: action,
-        browser: navigator.userAgent,
-        extra: {
-          ...details,
-          email: user?.email || null,
-          name: user?.name || null,
-          timestamp: new Date().toISOString(),
-        },
-      }),
+      body: JSON.stringify(payload),
     });
   } catch (err) {
     console.error("Splunk log failed:", err);

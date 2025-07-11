@@ -61,7 +61,7 @@ export function LabHeader({ onContactClick }: LabHeaderProps) {
               onClick={() => router.push("/lab")}
             >
               <UserRoundCheck className="w-4 h-4 mr-2" />
-              <span>{"MyLab"}</span>
+              MyLab
             </Button>
           </div>
 

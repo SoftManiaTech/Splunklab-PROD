@@ -542,7 +542,6 @@ function App(): JSX.Element {
           </div>
         )}
       </div>
-
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md">
@@ -572,5 +571,4 @@ function App(): JSX.Element {
     </GoogleOAuthProvider>
   );
 }
-
 export default App;

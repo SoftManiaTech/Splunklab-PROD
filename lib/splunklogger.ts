@@ -1,6 +1,12 @@
 import { getSession } from "next-auth/react";
 import { event as sendToGA4 } from "@/lib/gtag";
 
+/**
+ * Logs a unified event to Splunk and GA4.
+ * @param session - A guest session ID (or overridden value).
+ * @param action - The name of the event (e.g. start_instance).
+ * @param details - Additional event parameters.
+ */
 export const logToSplunk = async ({
   session = "guest-session",
   action,
@@ -11,9 +17,11 @@ export const logToSplunk = async ({
   details?: Record<string, any>;
 }) => {
   try {
+    // Get IP
     const res = await fetch("https://api.ipify.org?format=json");
     const { ip } = await res.json();
 
+    // Get user session
     const authSession = await getSession();
     const user = authSession?.user;
 
@@ -35,19 +43,19 @@ export const logToSplunk = async ({
       body: JSON.stringify(payload),
     });
 
-    // ✅ 2. Send to GA4 (custom event)
+    // ✅ 2. Send to GA4
     sendToGA4({
-      action, // GA event name (e.g. "download_pem", "start_instance")
+      action,
       params: {
-        session: user?.email || session || "guest-session",
+        session: payload.session,
         ip,
-        name: user?.name || "unknown",
-        email: user?.email || "unknown",
+        name: payload.name || "unknown",
+        email: payload.email || "unknown",
         browser: navigator.userAgent,
         ...details,
       },
     });
   } catch (err) {
-    console.error("Log failed:", err);
+    console.error("[LogToSplunk] Unified logging failed:", err);
   }
 };

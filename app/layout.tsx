@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Metadata } from "next";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import { GA_TRACKING_ID } from "@/lib/gtag"; // ✅ use correct GA ID from lib
 
 const inter = Inter({
   subsets: ["latin"],
@@ -72,10 +73,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <head>
-        {/* ✅ Google Analytics */}
+        {/* ✅ Google Analytics with Correct ID */}
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-WHVVB84Z78"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
         ></script>
         <script
           dangerouslySetInnerHTML={{
@@ -83,7 +84,7 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-WHVVB84Z78', {
+              gtag('config', '${GA_TRACKING_ID}', {
                 page_path: window.location.pathname,
               });
             `,
@@ -92,11 +93,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`}>
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        {/* Version Label */}
+        <div className="fixed bottom-4 left-4 z-50 text-xs text-gray-500 bg-white/80 border border-gray-200 px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
+          V1.4.2
+        </div>
       </body>
-      {/* Version Label Fixed at Bottom Right */}
-      <div className="fixed bottom-4 left-4 z-50 text-xs text-gray-500 bg-white/80 border border-gray-200 px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
-        V1.4.2
-      </div>
     </html>
   );
 }

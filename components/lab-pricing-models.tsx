@@ -99,6 +99,7 @@ const environments: EnvironmentOption[] = [
     info: ["(OS: Red Hat-9) (RAM: 4 GB) (vCPUs: 2)", "Splunk Enterprise Version: 9.4.1"],
     components: ["SH Cluster", "IDX Cluster", "Cluster Master", "HF", "Management server"],
     pricing: [
+      { amount: 500, hours: 5, paymentLink: "https://rzp.io/l/Splunk-DC-500" },
       { amount: 1000, hours: 9, paymentLink: "https://pages.razorpay.com/Splunk-DC-1000" },
       { amount: 2000, hours: 19, paymentLink: "https://pages.razorpay.com/Splunk-DC-2000" },
       { amount: 3000, hours: 28, paymentLink: "https://pages.razorpay.com/Splunk-DC-3000", popular: true },

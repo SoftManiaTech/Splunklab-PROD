@@ -172,7 +172,7 @@ function App(): JSX.Element {
       setEmail(userEmail);
       setUserName(fullName);
 
-      // ✅ Send log to Splunk for Google login
+      // ✅ Send log to Splunk + GA4 for Google login
       try {
         const ip = await getClientIp(); // same logic you used in page.tsx
 
@@ -188,6 +188,7 @@ function App(): JSX.Element {
           timestamp: new Date().toISOString(),
         };
 
+        // ✅ Send to Splunk (no change)
         await fetch("/api/log", {
           method: "POST",
           headers: {
@@ -195,8 +196,33 @@ function App(): JSX.Element {
           },
           body: JSON.stringify(payload),
         });
+
+        // ✅ Send to GA4 (new)
+        if (
+          typeof window !== "undefined" &&
+          typeof window.gtag === "function"
+        ) {
+          window.gtag("event", "google_login", payload);
+          console.log("[GA4] Event: google_login", payload);
+
+          // Count logins per user in localStorage
+          const loginKey = `google_login_count_${userEmail}`;
+          const currentCount =
+            parseInt(localStorage.getItem(loginKey) || "0", 10) + 1;
+          localStorage.setItem(loginKey, currentCount.toString());
+
+          // Set user ID and user property
+          window.gtag("config", process.env.G_TAG, {
+            user_id: userEmail,
+          });
+          window.gtag("set", "user_properties", {
+            google_login_count: currentCount,
+          });
+        } else {
+          console.warn("[GA4] gtag not initialized or unavailable.");
+        }
       } catch (err) {
-        console.error("Splunk Google login log failed:", err);
+        console.error("Google login log failed:", err);
       }
 
       const userHasLab = await checkIfUserHasLab(userEmail);

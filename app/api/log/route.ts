@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     const payload: Record<string, any> = {
       time: Math.floor(Date.now() / 1000),
-      index: "splunk_lab_wiz_prod",
+      index: "splunk_lab_wizard_prod",
       host: "UserActions",
       source: "Splunk-lab",
       sourcetype: "_json",

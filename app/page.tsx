@@ -23,6 +23,7 @@ import {
 } from "@/components/lab-pricing-models";
 import { event } from "@/lib/gtag";
 import { event as sendToGA4 } from "@/lib/gtag";
+import { LaunchSoonBanner } from "@/components/launch-soon-banner"
 // Splunk Logging Integration
 const getClientIp = async () => {
   try {
@@ -208,7 +209,6 @@ export default function LabEnvironments() {
     event({
       // action: "select_package",
       action: "user_selected_package",
-      title: "User selected package",
       params: {
         package_name: env.title,
         amount: option.amount,
@@ -344,6 +344,8 @@ export default function LabEnvironments() {
           });
         }}
       />
+
+      <LaunchSoonBanner />
 
       <LabHero />
 

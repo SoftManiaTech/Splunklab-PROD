@@ -1,10 +1,10 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react" // Import useEffect
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Trash2, ShoppingCart, X } from "lucide-react"
+import { Trash2, ShoppingCart } from "lucide-react"
 
 // Define the CartItem interface
 export interface CartItem {
@@ -30,9 +30,57 @@ export function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem, onProcee
     return cartItems.reduce((sum, item) => sum + item.amount, 0)
   }, [cartItems])
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow
+      const originalPaddingRight = document.body.style.paddingRight
+
+      // Prevent body scroll
+      document.body.style.overflow = "hidden"
+      // Adjust padding to prevent content shifting if scrollbar disappears
+      document.body.style.paddingRight = window.innerWidth - document.documentElement.clientWidth + "px"
+
+      const preventBodyScroll = (e: WheelEvent) => {
+        const target = e.target as Element
+        const modalContent = document.querySelector("[data-modal-content]") // Assuming ScrollArea has this attribute or similar
+
+        if (modalContent && !modalContent.contains(target)) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
+      }
+
+      const preventTouchScroll = (e: TouchEvent) => {
+        const target = e.target as Element
+        const modalContent = document.querySelector("[data-modal-content]")
+
+        if (modalContent && !modalContent.contains(target)) {
+          e.preventDefault()
+        }
+      }
+
+      document.addEventListener("wheel", preventBodyScroll, { passive: false })
+      document.addEventListener("touchmove", preventTouchScroll, { passive: false })
+
+      return () => {
+        // Restore original body scroll
+        document.body.style.overflow = originalOverflow
+        document.body.style.paddingRight = originalPaddingRight
+
+        document.removeEventListener("wheel", preventBodyScroll)
+        document.removeEventListener("touchmove", preventTouchScroll)
+      }
+    }
+  }, [isOpen])
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:w-[400px] flex flex-col bg-gradient-to-br from-white via-white to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] overflow-hidden">
+      <SheetContent
+        className="w-full sm:w-[400px] flex flex-col bg-gradient-to-br from-white via-white to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] overflow-hidden"
+        onWheel={(e) => e.stopPropagation()} // Prevent scroll from bubbling up
+        onTouchMove={(e) => e.stopPropagation()} // Prevent touch scroll from bubbling up
+      >
         <SheetHeader className="relative flex-shrink-0 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 p-6 pb-4 border-b border-green-100 dark:border-gray-600">
           <SheetTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent flex items-center justify-center gap-2 pr-12">
             <ShoppingCart className="w-6 h-6 text-green-600" />
@@ -47,7 +95,12 @@ export function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem, onProcee
             <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">Start adding packages!</p>
           </div>
         ) : (
-          <ScrollArea className="flex-1 py-4 pr-4 -mr-4">
+          <ScrollArea
+            data-modal-content // Added for event listener targeting
+            className="flex-1 py-4 pr-4 -mr-4"
+            onWheel={(e) => e.stopPropagation()} // Prevent scroll from bubbling up
+            onTouchMove={(e) => e.stopPropagation()} // Prevent touch scroll from bubbling up
+          >
             <div className="space-y-4">
               {cartItems.map((item) => (
                 <div

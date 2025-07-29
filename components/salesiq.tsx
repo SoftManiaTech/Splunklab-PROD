@@ -1,6 +1,13 @@
 "use client";
 import { useEffect } from "react";
 
+// ✅ Add this to extend the Window type
+declare global {
+  interface Window {
+    $zoho?: any;
+  }
+}
+
 const Salesiq = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -16,7 +23,7 @@ const Salesiq = () => {
     }
   }, []);
 
-  return null; // No UI needed, just loads the script
+  return null;
 };
 
 export default Salesiq;

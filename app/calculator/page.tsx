@@ -36,6 +36,7 @@ import {
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AlertDialogHeader } from "@/components/ui/alert-dialog"
+import Salesiq from "@/components/salesiq"
 
 // AWS Pricing Data - Separated by instance type
 const T2_MEDIUM_REGIONS = {
@@ -1381,3 +1382,4 @@ export default function SplunkBudgetCalculator() {
     </TooltipProvider>
   )
 }
+<Salesiq />

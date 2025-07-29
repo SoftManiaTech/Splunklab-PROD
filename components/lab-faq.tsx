@@ -9,7 +9,7 @@ const faqData = [
   {
     id: "live-data-sources",
     question: "Does this environment come with live data sources?",
-    answer: ["Not yet, this feature is planned for future versions."],
+    answer: ["No, however, we offer the source required for live data access."],
   },
   {
     id: "refund-policy",
@@ -32,6 +32,7 @@ const faqData = [
       "Preloaded datasets like BOTSv3.",
       "Essential Splunk add-ons.",
       "Standalone, distributed, or clustered setups.",
+      "Security Data Sources.",
     ],
   },
   {
@@ -85,8 +86,10 @@ export function LabFAQ() {
                 <AccordionContent className="pb-4 sm:pb-6">
                   <ul className="text-xs sm:text-sm text-gray-600 space-y-2 pl-4">
                     {faq.answer.map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <li key={index} className={`flex items-start ${item.startsWith("• ") ? "ml-4" : ""}`}>
+                        {!item.startsWith("• ") && (
+                          <span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        )}
                         {item}
                       </li>
                     ))}

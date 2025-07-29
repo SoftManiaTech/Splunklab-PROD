@@ -1,3 +1,4 @@
+import Salesiq from "@/components/salesiq"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Shield } from "lucide-react"
@@ -5,6 +6,8 @@ import Link from "next/link"
 
 export default function PrivacyPage() {
   return (
+    <>
+    <Salesiq />
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
@@ -97,5 +100,7 @@ export default function PrivacyPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
+

@@ -76,14 +76,6 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
               </div>
             </Button>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mt-6">
-            <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-              <Headphones className="w-5 h-5 text-green-600" />
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">Expert Support Available</p>
-              </div>
-            </div>
-          </div>
           <Button variant="ghost" onClick={onClose} className="w-full mt-4">
             Maybe Later
           </Button>

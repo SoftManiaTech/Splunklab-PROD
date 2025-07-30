@@ -3,7 +3,7 @@
 import { useMemo, useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { X, Info } from "lucide-react"
+import { Info } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import type { CartItem } from "./cart-sidebar"
@@ -88,12 +88,11 @@ export function ConfirmPackageModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="w-[95vw] sm:w-[500px] flex flex-col bg-gradient-to-br from-white via-white to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] overflow-hidden"
+        className="w-[95vw] sm:w-[500px] flex flex-col bg-gradient-to-br from-white via-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] overflow-hidden"
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
       >
         <DialogHeader className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 p-6 pb-4 border-b border-green-100 dark:border-gray-600">
-
           <div className="text-center pr-12">
             <div className="flex justify-center items-center gap-2 mb-4">
               <div
@@ -130,10 +129,10 @@ export function ConfirmPackageModal({
               <div>
                 <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-1">Validity Information:</h3>
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>Your server will be terminated based on whichever comes first:</li>
+                  <li>Your server will be terminated based on whichever limit is reached first:</li>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>Usage of {totalHours} hours</li>
-                    <li>Approximately {Math.ceil(totalHours / 2)} days from the time of provisioning.</li>
+                    <li>The total hours you purchased.</li>
+                    <li>A maximum number of days, which is approximately half of your purchased hours.</li>
                   </ul>
                 </ul>
               </div>

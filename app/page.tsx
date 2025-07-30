@@ -6,7 +6,6 @@ import { LabHeader } from "@/components/lab-header"
 import { LabFAQ } from "@/components/lab-faq"
 import { LabFooter } from "@/components/lab-footer"
 import { ContactModal } from "@/components/contact-modal"
-import { LabHero } from "@/components/lab-hero"
 import { LabPricingModels } from "@/components/lab-pricing-models"
 import { event } from "@/lib/gtag"
 import { event as sendToGA4 } from "@/lib/gtag"
@@ -23,7 +22,7 @@ import { AlertTriangle } from "lucide-react" // Added AlertTriangle icon
 // Splunk Logging Integration
 const getClientIp = async () => {
   try {
-    const res = await fetch("https://api.ipify.org?format=json")
+    const res = await fetch("https://api.ipify.org/ip?format=json")
     const data = await res.json()
     return data.ip || "unknown"
   } catch {
@@ -492,8 +491,6 @@ export default function LabEnvironments() {
         cartItems={cartItems} // Pass cart items to header
         onOpenCart={() => setCurrentStep(1)} // Open cart sidebar
       />
-
-      <LabHero />
 
       <LabPricingModels onAddToCart={handleAddToCart} cartItems={cartItems} onSplunkConflict={handleSplunkConflict} />
 

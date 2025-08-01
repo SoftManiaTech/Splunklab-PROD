@@ -3,8 +3,10 @@
 import React from "react"
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { Copy, Loader2, RefreshCcw, ChevronDown, ChevronUp } from "lucide-react" // Import Chevron icons
+import { Copy, Loader2, RefreshCcw, ChevronDown, ChevronUp, Key, X } from "lucide-react" // Import Key and X icon
 import { logToSplunk } from "@/lib/splunklogger"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog" // Import Dialog components
+import { Button } from "@/components/ui/button" // Import Button for the modal
 
 interface EC2Instance {
   Name: string
@@ -24,6 +26,9 @@ interface EC2TableProps {
   loading: boolean // Keep loading prop, but its usage changes
 }
 
+const MAX_PASSWORD_CLICKS = 5 // Maximum clicks allowed
+const PASSWORD_RESET_INTERVAL_MS = 20 * 60 * 1000 // 20 minutes in milliseconds
+
 const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loading }) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string
 
@@ -32,6 +37,30 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({}) // State to manage expanded rows
+
+  // State for password modal
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [passwordDetails, setPasswordDetails] = useState<{
+    username: string
+    password: string
+    publicIp?: string
+  } | null>(null)
+  const [passwordLoading, setPasswordLoading] = useState(false)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+
+  // New state for password rate limiting
+  const [passwordClickCount, setPasswordClickCount] = useState(0)
+  const [passwordLastResetTime, setPasswordLastResetTime] = useState<number>(Date.now())
+  const [isPasswordRateLimited, setIsPasswordRateLimited] = useState(false)
+  const [remainingTime, setRemainingTime] = useState(0) // New state for remaining time
+
+  // Helper function to format milliseconds into MM:SS
+  const formatRemainingTime = (ms: number): string => {
+    const totalSeconds = Math.max(0, Math.floor(ms / 1000))
+    const minutes = Math.floor(totalSeconds / 60)
+    const seconds = totalSeconds % 60
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+  }
 
   // Effect to set initial expanded state for specific service types
   useEffect(() => {
@@ -43,6 +72,74 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
     })
     setExpandedRows(initialExpandedState)
   }, [instances]) // Re-run when instances change
+
+  // Load password click state from localStorage on mount
+  useEffect(() => {
+    const storedCount = localStorage.getItem(`${email}-passwordClickCount`)
+    const storedTime = localStorage.getItem(`${email}-passwordLastResetTime`)
+
+    const now = Date.now()
+
+    if (storedCount && storedTime) {
+      const count = Number.parseInt(storedCount, 10)
+      const time = Number.parseInt(storedTime, 10)
+
+      if (now - time < PASSWORD_RESET_INTERVAL_MS) {
+        // If within the 20-minute window, restore state
+        setPasswordClickCount(count)
+        setPasswordLastResetTime(time)
+        if (count >= MAX_PASSWORD_CLICKS) {
+          setIsPasswordRateLimited(true)
+        }
+        setRemainingTime(time + PASSWORD_RESET_INTERVAL_MS - now) // Calculate initial remaining time
+      } else {
+        // If 20 minutes have passed, reset
+        localStorage.removeItem(`${email}-passwordClickCount`)
+        localStorage.removeItem(`${email}-passwordLastResetTime`)
+        setPasswordClickCount(0)
+        setPasswordLastResetTime(now)
+        setIsPasswordRateLimited(false)
+        setRemainingTime(0) // No remaining time if reset
+      }
+    } else {
+      // Initialize if no stored data
+      setPasswordClickCount(0)
+      setPasswordLastResetTime(now)
+      setIsPasswordRateLimited(false)
+      setRemainingTime(0)
+    }
+  }, [email]) // Re-run if email changes (different user)
+
+  // Set up interval for automatic password click reset and remaining time update
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = Date.now()
+      const resetTargetTime = passwordLastResetTime + PASSWORD_RESET_INTERVAL_MS
+      const timeUntilReset = resetTargetTime - now
+
+      if (timeUntilReset <= 0) {
+        // Time to reset
+        setPasswordClickCount(0)
+        setPasswordLastResetTime(now)
+        setIsPasswordRateLimited(false)
+        setRemainingTime(0) // Reset remaining time
+        localStorage.removeItem(`${email}-passwordClickCount`)
+        localStorage.removeItem(`${email}-passwordLastResetTime`)
+      } else {
+        setRemainingTime(timeUntilReset)
+        if (passwordClickCount >= MAX_PASSWORD_CLICKS && !isPasswordRateLimited) {
+          setIsPasswordRateLimited(true)
+        }
+      }
+    }
+
+    // Call immediately on mount to set initial remaining time
+    updateTimer()
+
+    const interval = setInterval(updateTimer, 1000) // Check and update every second
+
+    return () => clearInterval(interval)
+  }, [passwordClickCount, passwordLastResetTime, isPasswordRateLimited, email])
 
   const isCooldown = (instanceId: string, action: string) => disabledButtons[`${instanceId}_${action}`]
 
@@ -145,43 +242,16 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
   }
 
   const renderCopyField = (text: string, fieldId: string) => (
-    <div
-      style={{
-        position: "relative",
-        display: "inline-flex",
-        alignItems: "center",
-      }}
-    >
-      <span style={{ marginRight: 6 }}>{text}</span>
+    <div className="relative inline-flex items-center">
+      <span className="mr-1.5">{text}</span>
       <div
         onClick={() => handleCopy(text, fieldId)}
-        style={{
-          cursor: "pointer",
-          padding: 2,
-          borderRadius: 4,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f1f5f9",
-          border: "1px solid #e2e8f0",
-        }}
+        className="cursor-pointer p-0.5 rounded-md flex items-center justify-center bg-gray-100 border border-gray-200 hover:bg-gray-200 hover:text-gray-700 transition-colors duration-200"
       >
-        <Copy size={14} color="#4b5563" />
+        <Copy size={14} className="text-gray-500" />
       </div>
       {copiedField === fieldId && (
-        <div
-          style={{
-            position: "absolute",
-            top: "-20px",
-            left: 0,
-            backgroundColor: "#10b981",
-            color: "white",
-            fontSize: "0.7rem",
-            padding: "2px 6px",
-            borderRadius: 4,
-            whiteSpace: "nowrap",
-          }}
-        >
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-1 duration-200">
           Copied!
         </div>
       )}
@@ -190,7 +260,6 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
 
   const baseStyle: React.CSSProperties = {
     padding: "6px 14px",
-    marginRight: "6px",
     fontSize: "0.85rem",
     borderRadius: "6px",
     border: "none",
@@ -213,6 +282,10 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
     reboot: {
       backgroundColor: "#f59e0b",
       hover: "#d97706",
+    },
+    "get-password": {
+      backgroundColor: "#3b82f6", // Blue color for get password
+      hover: "#2563eb",
     },
   }
 
@@ -248,6 +321,90 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
         {isLoading ? <Loader2 size={14} className="animate-spin" /> : label}
       </button>
     )
+  }
+
+  // New function to handle Get Password button click
+  const handleGetPassword = async (instanceId: string) => {
+    if (isPasswordRateLimited) {
+      // Optionally, show a toast or alert that the limit has been reached
+      console.warn("Password retrieval limit reached. Please wait for the next 20-minute window.")
+      return
+    }
+
+    // Increment count and update state/localStorage BEFORE the async operation
+    const newCount = passwordClickCount + 1
+    setPasswordClickCount(newCount)
+    localStorage.setItem(`${email}-passwordClickCount`, newCount.toString())
+    localStorage.setItem(`${email}-passwordLastResetTime`, passwordLastResetTime.toString()) // Keep the same reset time for this window
+
+    if (newCount >= MAX_PASSWORD_CLICKS) {
+      setIsPasswordRateLimited(true)
+    }
+
+    setPasswordLoading(true)
+    setPasswordError(null)
+    setPasswordDetails(null)
+    setShowPasswordModal(true)
+
+    const instance = instances.find((inst) => inst.InstanceId === instanceId)
+    if (!instance) return
+
+    try {
+      const response = await axios.post(
+        "/api/win-pass", // New API route
+        {
+          instance_id: instanceId,
+          email: email, // Pass the user's email
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      )
+
+      if (response.data.status === "success" && response.data.decrypted_password) {
+        setPasswordDetails({
+          username: "Administrator",
+          password: response.data.decrypted_password,
+          publicIp: instance.PublicIp, // Add public IP here
+        })
+        await logToSplunk({
+          session: email,
+          action: "get_windows_password",
+          details: {
+            instance_id: instanceId,
+            instance_name: "Windows(AD&DNS)",
+            status: "success",
+          },
+        })
+      } else {
+        setPasswordError(response.data.message || "Failed to retrieve password.")
+        await logToSplunk({
+          session: email,
+          action: "get_windows_password",
+          details: {
+            instance_id: instanceId,
+            instance_name: "Windows(AD&DNS)",
+            status: "failed",
+            error: response.data.message || "Unknown error",
+          },
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching Windows password:", error)
+      setPasswordError("An error occurred while fetching the password. Please try again.")
+      await logToSplunk({
+        session: email,
+        action: "get_windows_password",
+        details: {
+          instance_id: instanceId,
+          instance_name: "Windows(AD&DNS)",
+          status: "failed",
+          error: (error as Error).message || "Network error",
+        },
+      })
+    } finally {
+      setPasswordLoading(false)
+    }
   }
 
   const toggleRowExpansion = (instanceId: string) => {
@@ -333,6 +490,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
                   const isBusyState = ["pending", "starting", "stopping", "rebooting"].includes(state)
                   const isExpanded = expandedRows[inst.InstanceId]
                   const showToggle = ["MYSQL", "Jenkins", "MSSQL", "OSSEC"].includes(inst.Name) // Show toggle for these names
+                  const isWindowsADDNS = inst.Name === "Windows(AD&DNS)"
 
                   return (
                     <React.Fragment key={inst.InstanceId}>
@@ -370,17 +528,55 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
                           {inst.PublicIp ? renderCopyField(inst.PublicIp, `${inst.InstanceId}_public`) : "-"}
                         </td>
                         <td style={{ padding: "10px" }}>
-                          {inst.State === "running" && inst.PublicIp && inst.SSHCommand
-                            ? renderCopyField(inst.SSHCommand, `${inst.InstanceId}_ssh`)
-                            : "-"}
+                          {isWindowsADDNS
+                            ? "-"
+                            : inst.State === "running" && inst.PublicIp && inst.SSHCommand
+                              ? renderCopyField(inst.SSHCommand, `${inst.InstanceId}_ssh`)
+                              : "-"}
                         </td>
-                        <td style={{ padding: "10px", whiteSpace: "nowrap" }}>
+                        <td
+                          style={{
+                            padding: "10px",
+                            whiteSpace: "nowrap",
+                            display: "flex",
+                            gap: "8px",
+                            alignItems: "center",
+                          }}
+                        >
                           {!isMutedState && isStopped && renderButton("Start", "start", inst.InstanceId)}
                           {!isMutedState && isRunning && (
                             <>
                               {renderButton("Stop", "stop", inst.InstanceId)}
                               {renderButton("Reboot", "reboot", inst.InstanceId)}
                             </>
+                          )}
+                          {isWindowsADDNS && inst.State === "running" && (
+                            <button
+                              onClick={() => handleGetPassword(inst.InstanceId)}
+                              style={{
+                                ...baseStyle,
+                                backgroundColor:
+                                  passwordLoading || isPasswordRateLimited
+                                    ? "#9ca3af"
+                                    : actionStyles["get-password"].backgroundColor,
+                                cursor: passwordLoading || isPasswordRateLimited ? "not-allowed" : "pointer",
+                                opacity: passwordLoading || isPasswordRateLimited ? 0.6 : 1,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                position: "relative", // For positioning the counter
+                              }}
+                              disabled={passwordLoading || isPasswordRateLimited}
+                              title={
+                                isPasswordRateLimited ? `Try again in ${formatRemainingTime(remainingTime)}` : undefined
+                              }
+                            >
+                              {passwordLoading ? <Loader2 size={14} className="animate-spin" /> : <Key size={14} />}
+                              {isPasswordRateLimited ? formatRemainingTime(remainingTime) : "Get Password"}
+                              <span className="absolute -top-2 -right-2 bg-blue-700 text-white text-xs font-bold rounded-full h-5 w-auto min-w-[20px] px-1 flex items-center justify-center">
+                                {MAX_PASSWORD_CLICKS - passwordClickCount}/{MAX_PASSWORD_CLICKS}
+                              </span>
+                            </button>
                           )}
                         </td>
                       </tr>
@@ -443,6 +639,118 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
           </div>
         </div>
       ))}
+
+      {/* Password Display Modal */}
+      <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 max-h-[90vh] flex flex-col overflow-hidden">
+          <DialogHeader className="relative bg-green-50 dark:bg-gray-800 p-6 pb-4 rounded-t-2xl">
+            <div className="text-center pr-12">
+              <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                Windows Server Credentials
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 dark:text-gray-400 text-sm mt-2">
+                Use these credentials to connect to your Windows server.
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          <div
+            data-modal-content
+            className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300 p-6"
+            onWheel={(e) => {
+              e.stopPropagation()
+            }}
+          >
+            {passwordLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                <span className="ml-3 text-gray-600 dark:text-gray-400">Fetching password...</span>
+              </div>
+            ) : passwordError ? (
+              <div className="text-red-500 text-center py-4">{passwordError}</div>
+            ) : passwordDetails ? (
+              <div className="space-y-4">
+                {passwordDetails.publicIp && (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <span className="font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-0">Public IP:</span>
+                    <div className="flex items-center gap-2 flex-wrap justify-end sm:justify-start">
+                      <span className="font-semibold text-gray-800 dark:text-white text-base break-all">
+                        {passwordDetails.publicIp}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleCopy(passwordDetails.publicIp ?? "", "win-public-ip")}
+                        className="relative h-7 w-7 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                      >
+                        <Copy className="h-4 w-4" />
+                        {copiedField === "win-public-ip" && (
+                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-1 duration-200">
+                            Copied!
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300 mb-1 sm:mb-0">Username:</span>
+                  <div className="flex items-center gap-2 flex-wrap justify-end sm:justify-start">
+                    <span className="font-semibold text-gray-800 dark:text-white text-base break-all">
+                      {passwordDetails.username}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleCopy(passwordDetails.username, "win-username")}
+                      className="relative h-7 w-7 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                    >
+                      <Copy className="h-4 w-4" />
+                      {copiedField === "win-username" && (
+                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-1 duration-200">
+                          Copied!
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300 mb-1">Password:</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-gray-800 dark:text-white text-base break-all">
+                      {passwordDetails.password}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleCopy(passwordDetails.password, "win-password")}
+                      className="relative h-7 w-7 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                    >
+                      <Copy className="h-4 w-4" />
+                      {copiedField === "win-password" && (
+                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-1 duration-200">
+                          Copied!
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-500 text-center py-4">No password details available.</div>
+            )}
+          </div>
+          <div className="flex-shrink-0 bg-white dark:bg-gray-900 p-6 rounded-b-2xl">
+            <div className="flex justify-center">
+              <Button
+                onClick={() => setShowPasswordModal(false)}
+                className="w-full sm:w-auto px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

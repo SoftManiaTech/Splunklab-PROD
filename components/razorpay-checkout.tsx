@@ -413,6 +413,15 @@ export function RazorpayCheckout({
                   </Select>
                 </div>
 
+                {hasClusteredSplunkPackage && (
+                  <div className="text-red-500 text-sm font-bold text-center mt-2">
+                    Need Cluster setup? Mail to{" "}
+                    <a href="mailto:labsupport@softmania.in" className="text-blue-600 hover:underline">
+                      labsupport@softmania.in
+                    </a>
+                  </div>
+                )}
+
                 {!hasClusteredSplunkPackage && (
                   <div className="space-y-2">
                     <Label

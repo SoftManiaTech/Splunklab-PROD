@@ -96,7 +96,7 @@ export function RazorpayCheckout({
       case "mssql-logs":
         return `mssql-${itemAmount}.template`
       case "windows-ad-dns":
-        return `winadns-${itemAmount}.template`
+        return `windows-${itemAmount}.template`
       case "linux-data-sources":
         return `linux-${itemAmount}.template`
       case "ossec":

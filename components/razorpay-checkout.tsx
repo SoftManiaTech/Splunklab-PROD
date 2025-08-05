@@ -103,6 +103,10 @@ export function RazorpayCheckout({
         return `ossec-${itemAmount}.template`
       case "jenkins":
         return `jenkins-${itemAmount}.template`
+      case "linux-server":
+        return `linux-${itemAmount}.template`
+      case "openvpn":
+        return `openvpn-${itemAmount}.template`
       // Removed "all-security-data-sources" case
       default:
         return `package-${itemAmount}.template`

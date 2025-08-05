@@ -346,41 +346,71 @@ const pricingCategories: PricingCategory[] = [
       {
         id: "linux-server",
         title: "Linux Server",
-        subtitle: "Coming Soon",
+        // subtitle: "Coming Soon",
+        subtitle: "System Logs & Monitoring",
         icon: <ShieldOff className="w-6 h-6" />,
-        features: ["Linux system logs", "Audit logs", "SSH activity monitoring", "Process monitoring"],
+        features: [
+          "Linux system logs",
+          "Audit logs",
+          "SSH activity monitoring",
+          "Process monitoring",
+        ],
         info: [
-          "(OS: Ubuntu 22.04) (RAM: 4 GB) (vCPUs: 2)",
+          "(OS: RHEL 9.6) (RAM: 4 GB) (vCPUs: 2)",
           "Storage: 30GB",
-          "Enabled ports: 22, 80, 443",
+          "Enabled ports: 22, 8000-9999",
           "Dynamic Public IP",
         ],
         components: ["Linux OS"],
-        pricing: [{ amount: 0, hours: 0 }],
-        color: "text-gray-500",
-        bgColor: "bg-gray-100 dark:bg-gray-800",
+        pricing: [
+          { amount: 700, hours: 56 },
+          { amount: 600, hours: 48 },
+          { amount: 500, hours: 40 },
+          { amount: 400, hours: 31 },
+          { amount: 300, hours: 23 },
+          { amount: 200, hours: 14 },
+          { amount: 100, hours: 6 },
+        ],
+        color: "text-green-600",
+        bgColor: "bg-green-50 dark:bg-green-950/50",
         type: "security-data-source",
-        isComingSoon: true,
+         // isComingSoon: true,
       },
+
       {
         id: "openvpn",
         title: "OpenVPN",
-        subtitle: "Coming Soon",
+        // subtitle: "Coming Soon",
+        subtitle: "Secure VPN Access Monitoring",
         icon: <Lock className="w-6 h-6" />,
-        features: ["OpenVPN server logs", "Connection logs", "User authentication logs", "Traffic monitoring"],
+        features: [
+          "OpenVPN server logs",
+          "Connection logs",
+          "User authentication logs",
+          "Traffic monitoring",
+        ],
         info: [
-          "(OS: Debian 11) (RAM: 2 GB) (vCPUs: 1)",
+          "(OS:  Ubuntu 22.04 ) (RAM: 4 GB) (vCPUs: 2)",
           "Storage: 20GB",
-          "Enabled ports: 22, 1194 (UDP/TCP)",
+          "Enabled ports: 22, 943, 443, 1194",
           "Dynamic Public IP",
         ],
         components: ["OpenVPN Server"],
-        pricing: [{ amount: 0, hours: 0 }],
-        color: "text-gray-500",
-        bgColor: "bg-gray-100 dark:bg-gray-800",
+        pricing: [
+          { amount: 700, hours: 56 },
+          { amount: 600, hours: 48 },
+          { amount: 500, hours: 40 },
+          { amount: 400, hours: 31 },
+          { amount: 300, hours: 23 },
+          { amount: 200, hours: 14 },
+          { amount: 100, hours: 6 },
+        ],
+        color: "text-purple-600",
+        bgColor: "bg-purple-50 dark:bg-purple-950/50",
         type: "security-data-source",
-        isComingSoon: true,
+         // isComingSoon: true,
       },
+
     ],
   },
 ]
@@ -864,7 +894,7 @@ export function LabPricingModels({ onAddToCart, cartItems, onSplunkConflict }: L
                     "space-y-2 transition-all duration-300 ease-in-out",
                     expandedFeatures[env.id || ""] ? "max-h-[1000px]" : "max-h-24 overflow-hidden relative",
                     !expandedFeatures[env.id || ""] &&
-                      "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-12 after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-gray-900 dark:after:to-transparent after:pointer-events-none",
+                    "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-12 after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-gray-900 dark:after:to-transparent after:pointer-events-none",
                   )}
                 >
                   {env.features.map((feature, index) => (
@@ -895,9 +925,9 @@ export function LabPricingModels({ onAddToCart, cartItems, onSplunkConflict }: L
                     Components
                   </div>
                   {expandedComponents[env.id || ""] ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500" />
+                    <ChevronUp className="w-4 h-4 text-gray-500 opacity-0" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                    <ChevronDown className="w-4 h-4 text-gray-500 opacity-0" />
                   )}
                 </button>
                 <div
@@ -905,8 +935,8 @@ export function LabPricingModels({ onAddToCart, cartItems, onSplunkConflict }: L
                     "flex flex-wrap gap-2 transition-all duration-300 ease-in-out",
                     expandedComponents[env.id || ""] ? "max-h-[1000px]" : "max-h-24 overflow-hidden relative",
                     !expandedComponents[env.id || ""] &&
-                      env.components.length > 6 &&
-                      "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-12 after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-gray-900 dark:after:to-transparent after:pointer-events-none",
+                    env.components.length > 6 &&
+                    "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-12 after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-gray-900 dark:after:to-transparent after:pointer-events-none",
                   )}
                 >
                   {env.components.map((component, index) => (
@@ -924,7 +954,7 @@ export function LabPricingModels({ onAddToCart, cartItems, onSplunkConflict }: L
 
             {/* Info Section */}
             {categoryIsExpanded && (
-              <div>
+              <div className="leading-7">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
@@ -948,7 +978,7 @@ export function LabPricingModels({ onAddToCart, cartItems, onSplunkConflict }: L
                     "space-y-2 transition-all duration-300 ease-in-out",
                     expandedInfo[env.id || ""] ? "max-h-[1000px]" : "max-h-24 overflow-hidden relative",
                     !expandedInfo[env.id || ""] &&
-                      "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-12 after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-gray-900 dark:after:to-transparent after:pointer-events-none",
+                    "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-12 after:bg-gradient-to-t after:from-white after:to-transparent dark:after:from-gray-900 dark:after:to-transparent after:pointer-events-none",
                   )}
                 >
                   {env.info.map((info, index) => (
@@ -993,13 +1023,12 @@ export function LabPricingModels({ onAddToCart, cartItems, onSplunkConflict }: L
                       e.stopPropagation()
                       handlePricingOptionSelect(env.id || "", option, env)
                     }}
-                    className={`relative p-3 rounded-2xl text-center cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] my-0.5 py-2.5 border mx-3 ${
-                      getSelectedPricingForDisplay(env.id || "")?.amount === option.amount
+                    className={`relative p-3 rounded-2xl text-center cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] my-0.5 py-2.5 border mx-3 ${getSelectedPricingForDisplay(env.id || "")?.amount === option.amount
                         ? "border-blue-500 bg-blue-50 dark:bg-blue-950/50 ring-1 ring-blue-200 dark:ring-blue-800 shadow-md"
                         : option.popular
                           ? "border-green-500 bg-green-50 dark:bg-green-950/50 shadow-sm"
                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600"
-                    }`}
+                      }`}
                   >
                     {getSelectedPricingForDisplay(env.id || "")?.amount === option.amount && (
                       <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">

@@ -66,7 +66,7 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
   useEffect(() => {
     const initialExpandedState: Record<string, boolean> = {}
     instances.forEach((instance) => {
-      if (["MYSQL", "Jenkins", "MSSQL", "OSSEC"].includes(instance.Name)) {
+      if (["MYSQL", "Jenkins", "MSSQL", "OSSEC", "OpenVPN"].includes(instance.Name)) {
         initialExpandedState[instance.InstanceId] = true
       }
     })
@@ -624,6 +624,16 @@ const EC2Table: React.FC<EC2TableProps> = ({ email, instances, setInstances, loa
                                   </span>
                                   <span>
                                     <strong>Admin Password:</strong> admin123
+                                  </span>
+                                </>
+                              )}
+                              {inst.Name === "OpenVPN" && (
+                                <>
+                                  <span>
+                                    <strong>User:</strong> openvpn
+                                  </span>
+                                  <span>
+                                    <strong>Password:</strong> SoftMania@123
                                   </span>
                                 </>
                               )}

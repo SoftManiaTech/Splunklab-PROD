@@ -8,7 +8,7 @@ import EC2Table from "../LabManagerApp/components/EC2Table"
 import { SoftmaniaLogo } from "@/components/softmania-logo"
 import Link from "next/link"
 import * as CryptoJS from "crypto-js"
-import { DownloadIcon, RefreshCcw } from "lucide-react"
+import { DownloadIcon, RefreshCcw } from 'lucide-react'
 import { event as sendToGA4 } from "@/lib/gtag" // Import GA4 logger
 import { logToSplunk } from "@/lib/splunklogger" // Import Splunk logger
 
@@ -34,9 +34,7 @@ function LabManagerClient(): JSX.Element {
   const [hasLab, setHasLab] = useState<boolean | null>(null)
   const router = useRouter()
   const [userName, setUserName] = useState<string>("")
-
   const SECRET_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "softmania_secret"
-
   const [usage, setUsage] = useState<Record<
     string,
     {
@@ -50,9 +48,10 @@ function LabManagerClient(): JSX.Element {
       plan_end_date?: string
     }
   > | null>(null)
-
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshingUsage, setRefreshingUsage] = useState(false) // Renamed to avoid conflict
   const [pemFiles, setPemFiles] = useState<{ filename: string; url: string }[]>([])
+  const [isUsageExpanded, setIsUsageExpanded] = useState(false)
+  const [rawUsageSummary, setRawUsageSummary] = useState<any[]>([])
 
   const encrypt = (data: string): string => {
     return CryptoJS.AES.encrypt(data, SECRET_KEY).toString()
@@ -99,7 +98,7 @@ function LabManagerClient(): JSX.Element {
 
   const fetchUsageSummary = async (userEmail: string) => {
     try {
-      setRefreshing(true)
+      setRefreshingUsage(true) // Use renamed state
       const res = await fetch("/api/lab-proxy", {
         method: "POST",
         headers: {
@@ -112,16 +111,31 @@ function LabManagerClient(): JSX.Element {
           body: { email: userEmail },
         }),
       })
-
       if (!res.ok) throw new Error("Usage fetch failed")
-
       const data = await res.json()
       const summaries = data.UsageSummary || []
-
       const formatted: Record<string, any> = {}
+      const processedTypes: Record<string, number> = {} // To store the count of each *cleaned* service type encountered so far
+
       summaries.forEach((summary: any) => {
-        const type = summary.ServiceType
-        formatted[type] = {
+        let originalType = summary.ServiceType
+        // Remove the complex pattern: #number#timestamp-(description)
+        // This handles patterns like: DataSources#100#2025-08-06T09:46:27-(Linux (Red Hat),OpenVPN)
+        let cleanedType = originalType.replace(/#\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, '')
+
+        let finalServiceType = cleanedType
+        if (processedTypes[cleanedType] === undefined) {
+          processedTypes[cleanedType] = 1 // Start from 1 for first occurrence
+        } else {
+          processedTypes[cleanedType]++ // Increment for subsequent occurrences
+        }
+
+        // Only add number suffix if there are multiple instances
+        if (processedTypes[cleanedType] > 1) {
+          finalServiceType = `${cleanedType} ${processedTypes[cleanedType]}`
+        }
+
+        formatted[finalServiceType] = {
           quota_hours: summary.QuotaHours || 0,
           used_hours: summary.ConsumedHours || 0,
           balance_hours: summary.BalanceHours || 0,
@@ -132,12 +146,12 @@ function LabManagerClient(): JSX.Element {
           plan_end_date: summary.PlanEndDate || "",
         }
       })
-
       setUsage(formatted)
+      setRawUsageSummary(summaries)
     } catch (err) {
       console.error("Error fetching usage summary:", err)
     } finally {
-      setRefreshing(false)
+      setRefreshingUsage(false) // Use renamed state
     }
   }
 
@@ -155,7 +169,6 @@ function LabManagerClient(): JSX.Element {
           body: { email: userEmail },
         }),
       })
-
       const data = await res.json()
       setPemFiles(data.files || [])
     } catch (error) {
@@ -177,7 +190,6 @@ function LabManagerClient(): JSX.Element {
           body: { email: userEmail },
         }),
       })
-
       const data = await res.json()
       setHasLab(data.hasLab || false)
       return data.hasLab
@@ -192,19 +204,15 @@ function LabManagerClient(): JSX.Element {
       const decoded: any = jwtDecode(credentialResponse.credential)
       const userEmail = decoded.email
       const fullName = decoded.name
-
       // Save in localStorage (your original code)
       localStorage.setItem("userEmail", encrypt(userEmail))
       localStorage.setItem("userName", encrypt(fullName))
       localStorage.setItem("loginTime", encrypt(Date.now().toString()))
-
       setEmail(userEmail)
       setUserName(fullName)
-
       // ✅ Send log to Splunk + GA4 for Google login
       try {
         const ip = await getClientIp() // same logic you used in page.tsx
-
         await logToSplunk({
           session: userEmail,
           action: "google_login",
@@ -215,12 +223,10 @@ function LabManagerClient(): JSX.Element {
             ip,
           },
         })
-
         // Count logins per user in localStorage
         const loginKey = `google_login_count_${userEmail}`
         const currentCount = Number.parseInt(localStorage.getItem(loginKey) || "0", 10) + 1
         localStorage.setItem(loginKey, currentCount.toString())
-
         // Set user ID and user property for GA4
         sendToGA4({
           action: "google_login",
@@ -235,7 +241,6 @@ function LabManagerClient(): JSX.Element {
       } catch (err) {
         console.error("Google login log failed:", err)
       }
-
       const userHasLab = await checkIfUserHasLab(userEmail)
       if (userHasLab) {
         fetchInstances(userEmail)
@@ -248,18 +253,14 @@ function LabManagerClient(): JSX.Element {
   useEffect(() => {
     const encryptedEmail = localStorage.getItem("userEmail")
     const encryptedLoginTime = localStorage.getItem("loginTime")
-
     if (encryptedEmail && encryptedLoginTime) {
       const storedEmail = decrypt(encryptedEmail)
       const encryptedName = localStorage.getItem("userName")
       const storedName = encryptedName ? decrypt(encryptedName) : ""
       setUserName(storedName)
-
       const loginTime = Number.parseInt(decrypt(encryptedLoginTime), 10)
-
       const now = new Date().getTime()
       const timeElapsed = now - loginTime
-
       if (timeElapsed < SESSION_DURATION_MS) {
         setEmail(storedEmail)
         checkIfUserHasLab(storedEmail).then((has) => {
@@ -289,6 +290,7 @@ function LabManagerClient(): JSX.Element {
   }, [email, hasLab])
 
   const handleLogout = () => setShowLogoutModal(true)
+
   const confirmLogout = () => {
     localStorage.removeItem("userEmail")
     localStorage.removeItem("loginTime")
@@ -300,11 +302,11 @@ function LabManagerClient(): JSX.Element {
     setPemFiles([])
     setShowLogoutModal(false)
   }
+
   const cancelLogout = () => setShowLogoutModal(false)
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-
       <div style={{ padding: 20 }}>
         {!email ? (
           <div className="flex flex-col items-center justify-center mt-16">
@@ -327,19 +329,8 @@ function LabManagerClient(): JSX.Element {
                     This is your personal <strong>Lab Server Manager Dashboard</strong> 🚀
                   </p>
                 </div>
-
-                {/* Right: Logout + Refresh */}
+                {/* Right: Logout button */}
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => fetchUsageSummary(email)}
-                    disabled={refreshing}
-                    className={`p-2 rounded-full ${
-                      refreshing ? "bg-gray-400 cursor-not-allowed" : "bg-amber-500 hover:bg-amber-600 text-gray-700"
-                    } text-white`}
-                    title="Refresh Usage"
-                  >
-                    <RefreshCcw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-                  </button>
                   <button
                     onClick={handleLogout}
                     className="bg-red-500 text-white px-3 text-sm py-1 rounded hover:bg-red-600"
@@ -349,92 +340,23 @@ function LabManagerClient(): JSX.Element {
                 </div>
               </div>
 
-              {/* Usage Section */}
-              <div className="w-full px-3 sm:px-4">
-                {usage &&
-                  Object.entries(usage).map(([serviceType, u]) => (
-                    <div key={serviceType} className="w-full text-sm sm:text-sm mt-3">
-                      <h3 className="text-sm font-semibold text-gray-800 mb-1">{serviceType} Usage</h3>
-
-                      {(u.balance_hours <= 0 || u.balance_days <= 0) && (
-                        <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 rounded px-3 py-1 mb-2">
-                          ⚠️ <strong>Quota exhausted.</strong> Server will be terminated soon.
-                        </div>
-                      )}
-
-                      {/* Desktop View */}
-                      <div
-                        className={`hidden sm:flex flex-wrap items-center gap-x-4 gap-y-1 rounded px-3 py-2 ${
-                          u.balance_hours <= 0 || u.balance_days <= 0
-                            ? "bg-red-50 border border-red-200 text-red-800"
-                            : "bg-green-50 border border-green-200 text-gray-800"
-                        }`}
-                      >
-                        <span>
-                          <strong>Quota:</strong> {formatFloatHours(u.quota_hours)} hrs
-                        </span>
-                        <span>
-                          <strong>Used:</strong> {formatFloatHours(u.used_hours)} hrs
-                        </span>
-                        <span>
-                          <strong>Left:</strong> {formatFloatHours(u.balance_hours)} hrs
-                        </span>
-                        <span className="text-gray-400">|</span>
-                        <span>
-                          <strong>Valid:</strong> {u.quota_days} days
-                        </span>
-                        <span>
-                          <strong>Start:</strong> {u.plan_start_date || "N/A"}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <strong>End:</strong> {u.plan_end_date || "N/A"}
-                          <span className="text-red-500">(terminate)</span>
-                        </span>
-                      </div>
-
-                      {/* Mobile View */}
-                      <div
-                        className={`sm:hidden flex flex-col gap-1 rounded px-3 py-2 ${
-                          u.balance_hours <= 0 || u.balance_days <= 0
-                            ? "bg-red-50 border border-red-200 text-red-800"
-                            : "bg-green-50 border border-green-200 text-gray-800"
-                        }`}
-                      >
-                        <p>
-                          <strong>Quota:</strong> {formatFloatHours(u.quota_hours)} hrs
-                        </p>
-                        <p>
-                          <strong>Used:</strong> {formatFloatHours(u.used_hours)} hrs
-                        </p>
-                        <p>
-                          <strong>Left:</strong> {formatFloatHours(u.balance_hours)} hrs
-                        </p>
-                        <p>
-                          <strong>Valid:</strong> {u.quota_days} days
-                        </p>
-                        <p>
-                          <strong>Start:</strong> {u.plan_start_date || "N/A"}
-                        </p>
-                        <p className="flex items-center gap-2">
-                          <strong>End:</strong> {u.plan_end_date || "N/A"}
-                          <span className="text-red-500">(terminate)</span>
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-
-                <p className="mt-3 text-sm text-gray-500">
-                  Trouble accessing your server? Email{" "}
-                  <a href="mailto:labsupport@softmania.in" className="text-blue-600 underline">
-                    labsupport@softmania.in
-                  </a>
-                  .
-                </p>
-              </div>
+              <p className="mt-3 text-sm text-gray-500">
+                Trouble accessing your server? Email{" "}
+                <a href="mailto:labsupport@softmania.in" className="text-blue-600 underline">
+                  labsupport@softmania.in
+                </a>
+                .
+              </p>
             </div>
-
-            <EC2Table email={email} instances={instances} setInstances={setInstances} loading={loading} />
-
+            <EC2Table
+              email={email}
+              instances={instances}
+              setInstances={setInstances}
+              loading={loading}
+              rawUsageSummary={rawUsageSummary}
+              fetchUsageSummary={() => fetchUsageSummary(email)} // Pass the function
+              isRefreshingUsage={refreshingUsage} // Pass the state
+            />
             {pemFiles.length > 0 && (
               <div className="bg-white shadow-md rounded-2xl p-5 mb-6 border border-gray-200 mt-[10px]">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">SSH PEM Files</h3>
@@ -477,7 +399,6 @@ function LabManagerClient(): JSX.Element {
             <h3 className="text-2xl font-semibold text-gray-800 mb-3">👋 Welcome to SoftMania Labs</h3>
             <p className="text-yellow-500 font-semibold mb-2">It looks like you don’t have a lab assigned yet.</p>
             <p className="text-gray-500">Choose a plan to get started with your personalized lab setup.</p>
-
             <div className="mt-6 flex flex-col gap-3">
               <button
                 onClick={() => router.push("/")}
@@ -485,7 +406,6 @@ function LabManagerClient(): JSX.Element {
               >
                 Choose Lab Plan
               </button>
-
               <button
                 onClick={handleLogout}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-xl border border-gray-300 transition-colors"
@@ -518,4 +438,5 @@ function LabManagerClient(): JSX.Element {
     </GoogleOAuthProvider>
   )
 }
+
 export default LabManagerClient

@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation"
 import { GoogleOAuthProvider, GoogleLogin, type CredentialResponse } from "@react-oauth/google"
 import { jwtDecode } from "jwt-decode"
 import EC2Table from "./components/EC2Table"
-import { SoftmaniaLogo } from "@/components/softmania-logo"
 import Link from "next/link"
 import * as CryptoJS from "crypto-js"
-import { DownloadIcon, RefreshCcw } from 'lucide-react'
+import { DownloadIcon } from "lucide-react"
 import { event as sendToGA4 } from "@/lib/gtag" // Import GA4 logger
 import { logToSplunk } from "@/lib/splunklogger" // Import Splunk logger
 
@@ -53,6 +52,7 @@ function LabManagerClient(): JSX.Element {
   const [isUsageExpanded, setIsUsageExpanded] = useState(false)
   const [rawUsageSummary, setRawUsageSummary] = useState<any[]>([])
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false) // New state for password modal
+  const [showUserGuideModal, setShowUserGuideModal] = useState(false) // State for User Guide popup
 
   const encrypt = (data: string): string => {
     return CryptoJS.AES.encrypt(data, SECRET_KEY).toString()
@@ -119,10 +119,10 @@ function LabManagerClient(): JSX.Element {
       const processedTypes: Record<string, number> = {} // To store the count of each *cleaned* service type encountered so far
 
       summaries.forEach((summary: any) => {
-        let originalType = summary.ServiceType
+        const originalType = summary.ServiceType
         // Remove the complex pattern: #number#timestamp-(description)
         // This handles patterns like: DataSources#100#2025-08-06T09:46:27-(Linux (Red Hat),OpenVPN)
-        let cleanedType = originalType.replace(/#\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, '')
+        const cleanedType = originalType.replace(/#\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, "")
 
         let finalServiceType = cleanedType
         if (processedTypes[cleanedType] === undefined) {
@@ -309,14 +309,14 @@ function LabManagerClient(): JSX.Element {
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-            <header className="border-b border-gray-100 bg-white/95 sticky top-0 z-40 px-5">
+      <header className="border-b border-gray-100 bg-white/95 sticky top-0 z-40 px-5">
         <div className="flex items-center justify-between py-4">
           {/* Left Side: Logo */}
           <div className="flex items-center gap-3 h-12">
             <div className="flex flex-col">
               <span className="text-xl font-bold text-gray-900 dark:text-white font-heading">
                 <Link href="/" passHref>
-                <span className="text-green-600">Soft</span> Mania
+                  <span className="text-green-600">Soft</span> Mania
                 </Link>
               </span>
             </div>
@@ -348,8 +348,22 @@ function LabManagerClient(): JSX.Element {
                     This is your personal <strong>Lab Server Manager Dashboard</strong> 🚀
                   </p>
                 </div>
-                {/* Right: Logout button */}
+                {/* Right: User Guide and Logout buttons */}
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowUserGuideModal(true)}
+                    className="bg-gradient-to-r from-green-600 to-teal-600 text-white px-3 py-1 rounded-lg font-medium shadow-lg hover:from-green-700 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      />
+                    </svg>
+                    User Guide
+                  </button>
                   <button
                     onClick={handleLogout}
                     className="bg-red-500 text-white px-3 text-sm py-1 rounded hover:bg-red-600"
@@ -418,7 +432,7 @@ function LabManagerClient(): JSX.Element {
         ) : (
           <div className="mt-20 max-w-md mx-auto bg-white border border-gray-200 shadow-lg rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-semibold text-gray-800 mb-3">👋 Welcome to SoftMania Labs</h3>
-            <p className="text-yellow-500 font-semibold mb-2">It looks like you don’t have a lab assigned yet.</p>
+            <p className="text-teal-500 font-semibold mb-2">It looks like you don’t have a lab assigned yet.</p>
             <p className="text-gray-500">Choose a plan to get started with your personalized lab setup.</p>
             <div className="mt-6 flex flex-col gap-3">
               <button
@@ -452,6 +466,34 @@ function LabManagerClient(): JSX.Element {
               <button onClick={confirmLogout} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
                 Logout
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showUserGuideModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full h-full max-w-7xl max-h-[95vh] flex flex-col">
+            {/* Modal header */}
+            <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-t-xl">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold"></h3>
+              </div>
+              <button
+                onClick={() => setShowUserGuideModal(false)}
+                className="text-white hover:text-gray-400 text-2xl font-bold transition-colors"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Embedded iframe content */}
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src="https://documents.softmania.in/external/manual/user-guides/article/how-to-connect-splunk-server-backend?p=8925397ddf335351a1488377eefdb7c536bd7c9180e8f14e4f4f3d5d73c409c7"
+                className="w-full h-full border-0"
+                title="User Guide"
+                loading="lazy"
+              />
             </div>
           </div>
         </div>

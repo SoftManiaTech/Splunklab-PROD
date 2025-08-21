@@ -30,7 +30,7 @@ const getClientIp = async () => {
   }
 }
 
-const sendLogToSplunk = async ({
+const sendLogToGA4 = async ({
   sessionId = "anonymous-session",
   action = "unknown_action",
   title = "User Event",
@@ -58,15 +58,6 @@ const sendLogToSplunk = async ({
       ...details,
     }
 
-    // ✅ 1. Send to Splunk
-    await fetch("/api/log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-
     // ✅ 2. Send to GA4
     sendToGA4({
       action, // e.g., "select_package"
@@ -79,7 +70,7 @@ const sendLogToSplunk = async ({
       },
     })
   } catch (err) {
-    console.error("Splunk + GA4 logging failed:", err)
+    console.error("GA4 logging failed:", err)
   }
 }
 
@@ -241,7 +232,7 @@ export default function LabEnvironments() {
       return [...prevItems, item]
     })
     // No longer automatically open cart sidebar here, dashboard will appear
-    sendLogToSplunk({
+    sendLogToGA4({
       sessionId: sessionId.current,
       action: "add_to_cart",
       title: "User added item to cart",
@@ -257,7 +248,7 @@ export default function LabEnvironments() {
 
   const handleRemoveItem = (id: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
-    sendLogToSplunk({
+    sendLogToGA4({
       sessionId: sessionId.current,
       action: "remove_from_cart",
       title: "User removed item from cart",
@@ -268,7 +259,7 @@ export default function LabEnvironments() {
   const handleProceedToConfirmPackage = () => {
     if (cartItems.length === 0) return // Should not happen if button is disabled
 
-    sendLogToSplunk({
+    sendLogToGA4({
       sessionId: sessionId.current,
       action: "user_clicked_proceed_to_confirm_package",
       title: "User clicked proceed to confirm package from cart",
@@ -286,7 +277,7 @@ export default function LabEnvironments() {
   }
 
   const handleConfirmPackageAndProceedToCheckout = () => {
-    sendLogToSplunk({
+    sendLogToGA4({
       sessionId: sessionId.current,
       action: "user_confirmed_package_proceed_to_checkout",
       title: "User confirmed package and proceeded to checkout",
@@ -318,7 +309,7 @@ export default function LabEnvironments() {
       })
 
       if (verifyResponse.ok) {
-        sendLogToSplunk({
+        sendLogToGA4({
           sessionId: sessionId.current,
           action: "payment_success_razorpay",
           title: "Razorpay payment success",
@@ -357,7 +348,7 @@ export default function LabEnvironments() {
   }
 
   const handleRazorpayError = (error: any) => {
-    sendLogToSplunk({
+    sendLogToGA4({
       sessionId: sessionId.current,
       action: "payment_failure_razorpay",
       title: "Razorpay payment failure",
@@ -393,13 +384,13 @@ export default function LabEnvironments() {
     const isFirstVisit = !sessionStorage.getItem("lab-page-visited")
 
     if (navType === "reload" || !isFirstVisit) {
-      sendLogToSplunk({
+      sendLogToGA4({
         sessionId: sessionId.current,
         action: "user_reloaded_environment",
         title: "User reloaded environment",
       })
     } else {
-      sendLogToSplunk({
+      sendLogToGA4({
         sessionId: sessionId.current,
         action: "user_visited_environment",
         title: "User visited environment",
@@ -411,7 +402,7 @@ export default function LabEnvironments() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get("payment") === "success") {
-      sendLogToSplunk({
+      sendLogToGA4({
         sessionId: sessionId.current,
         action: "payment_success",
         title: "Payment success",
@@ -424,7 +415,7 @@ export default function LabEnvironments() {
     }
 
     if (params.get("payment") === "failure") {
-      sendLogToSplunk({
+      sendLogToGA4({
         sessionId: sessionId.current,
         action: "payment_failure",
         title: "Payment failure",
@@ -481,7 +472,7 @@ export default function LabEnvironments() {
       <LabHeader
         onContactClick={() => {
           setShowContactModal(true)
-          sendLogToSplunk({
+          sendLogToGA4({
             sessionId: sessionId.current,
             action: "user_clicked_contact",
             title: "User clicked contact",
@@ -517,7 +508,7 @@ export default function LabEnvironments() {
 
       <div
         onClick={() => {
-          sendLogToSplunk({
+          sendLogToGA4({
             sessionId: sessionId.current,
             action: "user_clicked_faq",
             title: "User clicked FAQ",

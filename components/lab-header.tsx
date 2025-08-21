@@ -21,7 +21,6 @@ import {
   ShoppingCart,
   Play,
 } from "lucide-react"; // Added Play icon
-import { logToSplunk } from "@/lib/splunklogger";
 import type { CartItem } from "./cart-sidebar";
 import { VideoPlayerModal } from "./video-player-modal"; // Added video player import
 
@@ -51,18 +50,10 @@ export function LabHeader({
   };
 
   const handleMyLabClick = async () => {
-    await logToSplunk({
-      action: "Clicked MyLab Button",
-      details: { location: "lab-header", type: "desktop" },
-    });
     router.push("/lab");
   };
 
   const handleMobileMyLabClick = async () => {
-    await logToSplunk({
-      action: "Clicked MyLab Button",
-      details: { location: "lab-header", type: "mobile" },
-    });
     closeMobileMenu();
     router.push("/lab");
   };

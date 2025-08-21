@@ -77,7 +77,7 @@ export default function RootLayout({
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
         {/* Version Label */}
         <div className="fixed bottom-4 left-4 z-50 text-[7px] sm:text-xs text-gray-500 bg-white/80 border border-gray-200 px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
-          V2.3.1
+          v3.0
         </div>
       </body>
     </html>

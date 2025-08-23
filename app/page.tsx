@@ -157,40 +157,6 @@ export default function LabEnvironments() {
     }
 
     loadCart()
-
-    sessionStorage.setItem("lab-refreshing", "true")
-
-    const handleBeforeUnload = () => {
-      sessionStorage.removeItem("lab-refreshing")
-
-      setTimeout(() => {
-        const refreshed = sessionStorage.getItem("lab-refreshing")
-        if (!refreshed) {
-          const durationInSeconds = Math.floor((performance.now() - sessionStart.current) / 1000)
-
-          navigator.sendBeacon(
-            "/api/log",
-            JSON.stringify({
-              ip: "pending",
-              session: sessionId.current,
-              event: "User Session Ended",
-              action: "user_session_ended",
-              title: "User session ended",
-              browser: navigator.userAgent,
-              extra: {
-                durationInSeconds,
-                timestamp: new Date().toISOString(),
-              },
-            }),
-          )
-        }
-      }, 100)
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload)
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload)
-    }
   }, [])
 
   useEffect(() => {
